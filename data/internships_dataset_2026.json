@@ -1,0 +1,142 @@
+[
+  {
+    "name": "Software Quality Engineer Intern - Summer 2026",
+    "company": "CACI",
+    "apply_link": "https://caci.wd1.myworkdayjobs.com/en-US/external/job/US-TX-Austin/Software-Quality-Engineer-Intern---Summer-2026_316652",
+    "date_published": "Mon May 04 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "country": "united-states",
+    "city": "texas",
+    "location": "US TX Austin",
+    "skills": [
+      "Software Testing",
+      "Quality Assurance",
+      "Automation Tools",
+      "Python",
+      "SQL"
+    ],
+    "degree": "Bachelor's in Computer Science, Software Engineering, or related field",
+    "field": [
+      "Computer Science",
+      "Software Engineering",
+      "Information Technology"
+    ],
+    "experience": [
+      "Experience with software testing methodologies",
+      "Familiarity with CI/CD pipelines",
+      "Knowledge of version control systems (e.g., Git)"
+    ],
+    "summary": "This internship at CACI involves ensuring software quality through testing, automation, and collaboration with development teams. Interns will work on identifying and resolving software defects, improving testing processes, and contributing to the delivery of high-quality software products."
+  },
+  {
+    "name": "Software Engineering Intern - Fall 2026",
+    "company": "Gemini",
+    "apply_link": "https://boards.greenhouse.io/embed/job_app?for=gemini&token=7875125&gh_jid=7875125",
+    "date_published": "Mon May 04 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "country": "united-states",
+    "city": "new-york",
+    "location": "New York, New York",
+    "skills": [
+      "Software Development",
+      "Python",
+      "Java",
+      "Data Structures",
+      "Algorithms"
+    ],
+    "degree": "Bachelor's in Computer Science, Engineering, or related field",
+    "field": [
+      "Computer Science",
+      "Software Engineering",
+      "Computer Engineering"
+    ],
+    "experience": [
+      "Proficiency in at least one programming language",
+      "Experience with software development lifecycle",
+      "Knowledge of database systems"
+    ],
+    "summary": "At Gemini, interns will work on designing, developing, and testing software solutions. This role involves collaborating with engineering teams, contributing to codebase improvements, and solving complex technical problems in a fast-paced environment."
+  },
+  {
+    "name": "Intern - Web Interface Software Engineer - 2026",
+    "company": "Motorola Solutions",
+    "apply_link": "https://motorolasolutions.wd5.myworkdayjobs.com/en-US/careers/job/Los-Angeles-CA/Intern---Web-Interface-Software-Engineer--2026-_R64590",
+    "date_published": "Mon May 04 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "country": "united-states",
+    "city": "california",
+    "location": "Los Angeles, CA",
+    "skills": [
+      "Web Development",
+      "JavaScript",
+      "HTML/CSS",
+      "React",
+      "Node.js"
+    ],
+    "degree": "Bachelor's in Computer Science, Web Development, or related field",
+    "field": [
+      "Computer Science",
+      "Web Development",
+      "Software Engineering"
+    ],
+    "experience": [
+      "Experience with front-end and back-end development",
+      "Familiarity with RESTful APIs",
+      "Knowledge of web security principles"
+    ],
+    "summary": "Motorola Solutions seeks interns to develop and maintain web interfaces for software applications. Responsibilities include designing user interfaces, optimizing web performance, and ensuring cross-browser compatibility."
+  },
+  {
+    "name": "Software Engineer — Summer Intern",
+    "company": "Snorkel AI",
+    "apply_link": "https://job-boards.greenhouse.io/snorkelai/jobs/5774350004",
+    "date_published": "Mon May 04 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "country": "united-states",
+    "city": "california",
+    "location": "Redwood City, CA",
+    "skills": [
+      "Machine Learning",
+      "Python",
+      "Data Science",
+      "Software Development",
+      "Cloud Computing"
+    ],
+    "degree": "Bachelor's in Computer Science, Data Science, or related field",
+    "field": [
+      "Computer Science",
+      "Data Science",
+      "Machine Learning"
+    ],
+    "experience": [
+      "Experience with machine learning frameworks (e.g., TensorFlow, PyTorch)",
+      "Proficiency in Python",
+      "Knowledge of cloud platforms (e.g., AWS, GCP)"
+    ],
+    "summary": "Snorkel AI offers an internship focused on developing machine learning models and software solutions. Interns will work on data pipelines, model training, and deployment, contributing to AI-driven products."
+  },
+  {
+    "name": "Software Product Management Intern",
+    "company": "Trimble",
+    "apply_link": "https://trimble.wd1.myworkdayjobs.com/en-US/trimblecareers/job/US---CA-Sunnyvale/Software-Product-Management-Intern_R55692",
+    "date_published": "Mon May 04 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "country": "united-states",
+    "city": "california",
+    "location": "US CA, Sunnyvale",
+    "skills": [
+      "Product Management",
+      "Agile Methodologies",
+      "Software Development Lifecycle",
+      "Communication",
+      "Analytics"
+    ],
+    "degree": "Bachelor's in Computer Science, Business, or related field",
+    "field": [
+      "Computer Science",
+      "Business",
+      "Product Management"
+    ],
+    "experience": [
+      "Experience with product lifecycle management",
+      "Familiarity with Agile/Scrum methodologies",
+      "Strong analytical and communication skills"
+    ],
+    "summary": "Trimble’s internship involves working with software product teams to define requirements, manage roadmaps, and ensure successful product launches. Interns will collaborate with cross-functional teams to deliver innovative software solutions."
+  }
+]

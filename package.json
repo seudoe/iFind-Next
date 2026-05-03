@@ -9,7 +9,12 @@
         "lint": "eslint",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:coverage": "vitest run --coverage"
+        "test:coverage": "vitest run --coverage",
+        "scrape": "node scripts/scrape-and-moderate.mjs",
+        "scrape:github": "node scripts/scrape-and-moderate.mjs --scrapers=github",
+        "scrape:internshala": "node scripts/scrape-and-moderate.mjs --scrapers=internshala",
+        "scrape:indeed": "node scripts/scrape-and-moderate.mjs --scrapers=indeed",
+        "scrape:skip-fetch": "node scripts/scrape-and-moderate.mjs --skip-scrape"
     },
     "dependencies": {
         "@auth/mongodb-adapter": "^3.11.2",

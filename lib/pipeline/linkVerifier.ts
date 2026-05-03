@@ -28,15 +28,30 @@ const TRUSTED_DOMAINS = new Set([
     "twentynineteen.in",
     "angellist.com",
     "wellfound.com",
+    // ATS platforms — all use company-specific subdomains (e.g. company.greenhouse.io)
     "greenhouse.io",
     "lever.co",
     "workday.com",
+    "myworkdayjobs.com", // Workday career sites (e.g. caci.wd1.myworkdayjobs.com)
     "taleo.net",
     "icims.com",
     "smartrecruiters.com",
+    "jobvite.com",
+    "ashbyhq.com",
+    "rippling.com",
+    "bamboohr.com",
+    "recruitee.com",
+    "breezy.hr",
+    "pinpointhq.com",
+    "dover.com",
+    "workable.com",
+    // Major company career pages
     "amazon.jobs",
     "google.com",
     "microsoft.com",
+    "apple.com",
+    "meta.com",
+    "netflix.com",
     "flipkart.com",
     "razorpay.com",
     "swiggy.com",
@@ -47,6 +62,19 @@ const TRUSTED_DOMAINS = new Set([
     "wipro.com",
     "tcs.com",
     "hcl.com",
+    "accenture.com",
+    "ibm.com",
+    "oracle.com",
+    "salesforce.com",
+    "adobe.com",
+    "qualcomm.com",
+    "nvidia.com",
+    "intel.com",
+    "cisco.com",
+    "motorolasolutions.com",
+    "caci.com",
+    "trimble.com",
+    "snorkel.ai",
 ]);
 
 const SHORTENER_TLDS = new Set([".ly", ".gl", ".gg", ".to", ".cc"]);
@@ -124,7 +152,12 @@ function checkSuspiciousPath(pathname: string): string | null {
 }
 
 function checkExcessiveSubdomains(hostname: string): string | null {
-    if (hostname.split(".").length >= 4) return "excessive_subdomains";
+    if (hostname.split(".").length >= 4) {
+        // Skip if the root domain is a known trusted ATS or company
+        const root = getRootDomain(hostname);
+        if (TRUSTED_DOMAINS.has(root)) return null;
+        return "excessive_subdomains";
+    }
     return null;
 }
 

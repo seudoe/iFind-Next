@@ -50,33 +50,37 @@ def scrape_internshala_internships(max_internships=None):
         
         for card in internship_cards[:max_internships]:
             try:
-                # Extract company name
-                company_elem = card.find('p', class_='company-name') or card.find('a', class_='link_display_like_text')
-                company = company_elem.text.strip() if company_elem else "Unknown Company"
-                
-                # Extract position title
-                title_elem = card.find('h3', class_='heading_4_5') or card.find('div', class_='profile')
+                # Extract position title and apply link from the job title anchor
+                title_elem = card.find('a', class_='job-title-href')
                 position = title_elem.text.strip() if title_elem else "Software Internship"
-                
+                href = title_elem.get('href', '') if title_elem else ''
+                apply_link = ("https://internshala.com" + href) if href else "https://internshala.com"
+
+                # Extract company name
+                company_elem = card.find('p', class_='company-name')
+                company = company_elem.text.strip() if company_elem else "Unknown Company"
+
                 # Extract location
-                location_elem = card.find('div', id=lambda x: x and 'location_names' in x) or card.find('a', class_='location_link')
+                location_elem = card.find('div', class_='locations')
                 location = location_elem.text.strip() if location_elem else "Remote"
-                
-                # Extract apply link
-                link_elem = card.find('a', class_='view_detail_button') or card.find('div', class_='button-container')
-                if link_elem and link_elem.get('href'):
-                    apply_link = "https://internshala.com" + link_elem['href']
-                elif link_elem:
-                    nested_link = link_elem.find('a')
-                    apply_link = "https://internshala.com" + nested_link['href'] if nested_link and nested_link.get('href') else "https://internshala.com"
-                else:
-                    apply_link = "https://internshala.com"
-                
+
+                # Extract stipend
+                stipend_elem = card.find('span', class_='stipend')
+                stipend_text = stipend_elem.text.strip() if stipend_elem else ""
+
+                # Extract duration (3rd row-1-item span)
+                row_items = card.find_all('div', class_='row-1-item')
+                duration_text = ""
+                if len(row_items) >= 3:
+                    duration_text = row_items[2].find('span').text.strip() if row_items[2].find('span') else ""
+
                 internships.append({
                     "company": company,
                     "name": position,
                     "location": location,
                     "apply_link": apply_link,
+                    "stipend_text": stipend_text,
+                    "duration_text": duration_text,
                     "source": "Internshala"
                 })
                 

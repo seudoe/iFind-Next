@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -333,6 +334,9 @@ export function ModerationTab({ user }: { user: User }) {
                                         Company / Role
                                     </th>
                                     <th className="text-left px-4 py-3 font-medium text-gray-600">
+                                        Link
+                                    </th>
+                                    <th className="text-left px-4 py-3 font-medium text-gray-600">
                                         Source
                                     </th>
                                     <th className="text-left px-4 py-3 font-medium text-gray-600">
@@ -375,6 +379,25 @@ export function ModerationTab({ user }: { user: User }) {
                                                 <p className="text-gray-500 truncate max-w-[180px]">
                                                     {internship.name}
                                                 </p>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <a
+                                                    href={internship.applyLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-xs font-medium truncate max-w-[160px]"
+                                                    title={internship.applyLink}
+                                                >
+                                                    <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                                                    <span className="truncate">
+                                                        {new URL(
+                                                            internship.applyLink,
+                                                        ).hostname.replace(
+                                                            "www.",
+                                                            "",
+                                                        )}
+                                                    </span>
+                                                </a>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <Badge

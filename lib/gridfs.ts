@@ -4,21 +4,27 @@
  */
 
 import mongoose from "mongoose";
-import { GridFSBucket } from "mongodb";
 import { Readable } from "stream";
 
 // ─── Bucket helpers ───────────────────────────────────────────────────────────
+// We use mongoose.mongo.GridFSBucket and mongoose.mongo.ObjectId so that
+// both come from the exact same mongodb driver instance that mongoose uses,
+// avoiding the "Unsupported BSON version" error caused by duplicate mongodb packages.
 
-function getResumeBucket(): GridFSBucket {
+function getResumeBucket() {
   const db = mongoose.connection.db;
   if (!db) throw new Error("MongoDB not connected");
-  return new GridFSBucket(db, { bucketName: "resumes" });
+  return new mongoose.mongo.GridFSBucket(db, { bucketName: "resumes" });
 }
 
-function getPhotoBucket(): GridFSBucket {
+function getPhotoBucket() {
   const db = mongoose.connection.db;
   if (!db) throw new Error("MongoDB not connected");
-  return new GridFSBucket(db, { bucketName: "photos" });
+  return new mongoose.mongo.GridFSBucket(db, { bucketName: "photos" });
+}
+
+function toObjectId(id: string) {
+  return new mongoose.mongo.ObjectId(id);
 }
 
 export interface UploadResult {
@@ -31,7 +37,7 @@ export interface UploadResult {
 
 /**
  * Upload a PDF buffer to GridFS.
- * Deletes any previous file with the same userId before uploading.
+ * Deletes any previous file for the same userId before uploading.
  */
 export async function uploadResumeToGridFS(
   buffer: Buffer,
@@ -40,9 +46,10 @@ export async function uploadResumeToGridFS(
 ): Promise<UploadResult> {
   const bucket = getResumeBucket();
 
+  // Delete old resume first
   await deleteResumeFromGridFS(userId);
 
-  const fileId = new mongoose.Types.ObjectId();
+  const fileId = new mongoose.mongo.ObjectId();
   const stream = bucket.openUploadStreamWithId(fileId, fileName, {
     metadata: { userId, uploadedAt: new Date(), contentType: "application/pdf" },
   });
@@ -69,17 +76,24 @@ export async function deleteResumeFromGridFS(userId: string): Promise<void> {
 
 export function streamResumeFromGridFS(fileId: string): NodeJS.ReadableStream {
   const bucket = getResumeBucket();
-  return bucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
+  return bucket.openDownloadStream(toObjectId(fileId));
+}
+
+export async function getResumeBuffer(fileId: string): Promise<Buffer> {
+  const bucket = getResumeBucket();
+  const stream = bucket.openDownloadStream(toObjectId(fileId));
+  const chunks: Buffer[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    stream.on("error", reject);
+  });
 }
 
 // ─── Profile Photo ────────────────────────────────────────────────────────────
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-/**
- * Upload a profile photo buffer to GridFS.
- * Replaces any existing photo for the user.
- */
 export async function uploadPhotoToGridFS(
   buffer: Buffer,
   mimeType: string,
@@ -90,12 +104,10 @@ export async function uploadPhotoToGridFS(
   }
 
   const bucket = getPhotoBucket();
-
-  // Delete old photo
   await deletePhotoFromGridFS(userId);
 
   const ext = mimeType.split("/")[1].replace("jpeg", "jpg");
-  const fileId = new mongoose.Types.ObjectId();
+  const fileId = new mongoose.mongo.ObjectId();
   const stream = bucket.openUploadStreamWithId(fileId, `${userId}_photo.${ext}`, {
     metadata: { userId, mimeType, uploadedAt: new Date() },
   });
@@ -106,7 +118,6 @@ export async function uploadPhotoToGridFS(
       .on("error", reject);
   });
 
-  // Return the API URL that serves the image
   return `/api/user/photo/${fileId.toString()}`;
 }
 
@@ -118,16 +129,11 @@ export async function deletePhotoFromGridFS(userId: string): Promise<void> {
 
 export function streamPhotoFromGridFS(fileId: string): NodeJS.ReadableStream {
   const bucket = getPhotoBucket();
-  return bucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
+  return bucket.openDownloadStream(toObjectId(fileId));
 }
 
-/**
- * Get the mimeType stored in a photo's metadata.
- */
 export async function getPhotoMimeType(fileId: string): Promise<string> {
   const bucket = getPhotoBucket();
-  const files = await bucket
-    .find({ _id: new mongoose.Types.ObjectId(fileId) })
-    .toArray();
+  const files = await bucket.find({ _id: toObjectId(fileId) }).toArray();
   return (files[0]?.metadata?.mimeType as string) ?? "image/jpeg";
 }

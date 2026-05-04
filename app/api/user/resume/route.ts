@@ -4,7 +4,8 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { uploadResumeToGridFS, deleteResumeFromGridFS } from "@/lib/gridfs";
 
-// POST /api/user/resume — upload PDF, store in MongoDB GridFS
+// POST /api/user/resume — upload PDF to GridFS, save to user doc
+// Parsing is intentionally NOT done here — the client calls /reextract after upload
 export async function POST(req: NextRequest) {
   try {
     const session = await getSession();
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const fileName = `${user.username}_resume.pdf`;
 
+    // Upload to GridFS (replaces any existing file for this user)
     const { fileId, viewLink, downloadLink } = await uploadResumeToGridFS(
       buffer,
       fileName,
@@ -42,14 +44,16 @@ export async function POST(req: NextRequest) {
     );
 
     const uploadedAt = new Date();
+
+    // Save to user doc — clear old parsedData since this is a new file
     user.resume = {
       driveFileId: fileId,
       driveViewLink: viewLink,
       uploadedAt,
       extractedSkills: user.resume?.extractedSkills ?? [],
+      parsedData: null,
     };
 
-    // Bump profile score if this is the first resume upload
     if (user.profileCompletionScore < 100) {
       user.profileCompletionScore = Math.min(user.profileCompletionScore + 20, 100);
     }
@@ -85,7 +89,13 @@ export async function DELETE() {
 
     await deleteResumeFromGridFS(session.userId);
 
-    user.resume = { driveFileId: null, driveViewLink: null, uploadedAt: null, extractedSkills: [] };
+    user.resume = {
+      driveFileId: null,
+      driveViewLink: null,
+      uploadedAt: null,
+      extractedSkills: [],
+      parsedData: null,
+    };
     await user.save();
 
     return NextResponse.json({ success: true, message: "Resume deleted" });

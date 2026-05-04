@@ -4,28 +4,35 @@ import { useState, useRef } from "react";
 import {
   Upload, FileText, RefreshCw, Sparkles,
   CheckCircle, AlertCircle, Trash2, Download, ExternalLink,
+  Briefcase, GraduationCap, Code, Award, Globe, BookOpen,
+  Users, Trophy, Heart, MapPin, Link, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
-import type { User } from "@/types";
+import type { User, ParsedResumeData } from "@/types";
 
 interface ResumeTabProps {
   user: User;
   onResumeUpdate?: () => void;
 }
 
+// Upload goes through two phases shown to the user
+type UploadPhase = "idle" | "uploading" | "extracting";
+
 export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
-  const [dragging, setDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [dragging, setDragging]       = useState(false);
+  const [uploadPhase, setUploadPhase] = useState<UploadPhase>("idle");
+  const [deleting, setDeleting]       = useState(false);
+  const [reextracting, setReextracting] = useState(false);
   const [localResume, setLocalResume] = useState(user.resume);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const hasResume = !!localResume?.driveViewLink;
+  const hasResume  = !!localResume?.driveViewLink;
+  const isUploading = uploadPhase !== "idle";
 
+  // ── Phase 1: upload file, Phase 2: extract data ──────────────────────────
   const handleFile = async (file: File) => {
     if (file.type !== "application/pdf") {
       toast.error("Only PDF files are accepted.");
@@ -36,7 +43,10 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
       return;
     }
 
-    setUploading(true);
+    // ── Phase 1: upload ───────────────────────────────────────────────────
+    setUploadPhase("uploading");
+    let uploadedResume: typeof localResume;
+
     try {
       const formData = new FormData();
       formData.append("resume", file);
@@ -50,27 +60,53 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Upload failed");
 
-      // Update local state immediately — no need to refetch the whole user
-      setLocalResume({
-        driveFileId: json.data.driveFileId,
-        driveViewLink: json.data.driveViewLink,
+      uploadedResume = {
+        driveFileId: json.data.fileId,
+        driveViewLink: json.data.viewLink,
         uploadedAt: json.data.uploadedAt,
         extractedSkills: localResume?.extractedSkills ?? [],
-      });
+        parsedData: null,
+      };
 
-      toast.success("Resume uploaded successfully!");
+      // Show the resume immediately — user can see it while extraction runs
+      setLocalResume(uploadedResume);
+      toast.success("Resume uploaded!");
       onResumeUpdate?.();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
+      setUploadPhase("idle");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
+
+    // ── Phase 2: extract data ─────────────────────────────────────────────
+    setUploadPhase("extracting");
+    try {
+      const res = await fetch("/api/user/resume/reextract", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Extraction failed");
+
+      setLocalResume({ ...uploadedResume!, parsedData: json.data.parsedData });
+      toast.success("Data extracted from resume!");
+      onResumeUpdate?.();
+    } catch (err) {
+      // Extraction failure is non-fatal — resume is still saved
+      toast.error(
+        err instanceof Error ? err.message : "Extraction failed — you can retry with Re-extract"
+      );
     } finally {
-      setUploading(false);
-      // Reset file input so the same file can be re-selected
+      setUploadPhase("idle");
       if (fileRef.current) fileRef.current.value = "";
     }
   };
 
+  // ── Delete ────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
-    if (!confirm("Remove your resume? This will delete it from Google Drive.")) return;
+    if (!confirm("Remove your resume? This cannot be undone.")) return;
     setDeleting(true);
     try {
       const res = await fetch("/api/user/resume", {
@@ -79,13 +115,41 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      setLocalResume({ driveFileId: null, driveViewLink: null, uploadedAt: null, extractedSkills: [] });
+      setLocalResume({ driveFileId: null, driveViewLink: null, uploadedAt: null, extractedSkills: [], parsedData: null });
       toast.success("Resume removed.");
       onResumeUpdate?.();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to delete resume");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  // ── Re-extract ────────────────────────────────────────────────────────────
+  const handleReextract = async () => {
+    if (!localResume?.driveFileId) return;
+    setReextracting(true);
+    try {
+      const res = await fetch("/api/user/resume/reextract", {
+        method: "POST",
+        credentials: "include",
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        if (res.status === 404) {
+          toast.error("Resume file not found. Please re-upload your resume.");
+        } else {
+          throw new Error(json.error || "Re-extraction failed");
+        }
+        return;
+      }
+      setLocalResume({ ...localResume, parsedData: json.data.parsedData });
+      toast.success("Resume data re-extracted!");
+      onResumeUpdate?.();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Re-extraction failed");
+    } finally {
+      setReextracting(false);
     }
   };
 
@@ -96,17 +160,12 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
     if (file) handleFile(file);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-  };
-
   return (
     <div className="max-w-2xl space-y-6">
       <div>
         <h2 className="text-lg font-semibold text-gray-900">Resume</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Upload your resume in PDF format. It will be stored in Google Drive.
+          Upload your resume in PDF format. It will be stored securely.
         </p>
       </div>
 
@@ -115,11 +174,11 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
-        onClick={() => !uploading && fileRef.current?.click()}
+        onClick={() => !isUploading && fileRef.current?.click()}
         className={[
-          "relative border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all",
+          "relative border-2 border-dashed rounded-xl p-10 text-center transition-all",
+          isUploading ? "pointer-events-none opacity-70 cursor-default" : "cursor-pointer",
           dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-gray-50",
-          uploading ? "pointer-events-none opacity-60" : "",
         ].join(" ")}
       >
         <input
@@ -127,18 +186,30 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
           type="file"
           accept=".pdf,application/pdf"
           className="hidden"
-          onChange={handleFileChange}
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
         />
 
-        {uploading ? (
+        {uploadPhase === "uploading" && (
           <div className="flex flex-col items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
               <Upload className="h-6 w-6 text-blue-600 animate-bounce" />
             </div>
-            <p className="text-sm font-medium text-blue-600">Uploading to Google Drive…</p>
-            <p className="text-xs text-gray-400">This may take a few seconds</p>
+            <p className="text-sm font-medium text-blue-600">Uploading resume…</p>
+            <p className="text-xs text-gray-400">Saving your file</p>
           </div>
-        ) : (
+        )}
+
+        {uploadPhase === "extracting" && (
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
+              <Sparkles className="h-6 w-6 text-indigo-600 animate-pulse" />
+            </div>
+            <p className="text-sm font-medium text-indigo-600">Extracting data from resume…</p>
+            <p className="text-xs text-gray-400">AI is reading your resume</p>
+          </div>
+        )}
+
+        {uploadPhase === "idle" && (
           <div className="flex flex-col items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
               <Upload className="h-6 w-6 text-gray-400" />
@@ -159,7 +230,7 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
       {/* ── Current Resume Card ──────────────────────────────────────── */}
       {hasResume ? (
         <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
-          {/* Header row */}
+          {/* Header */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
@@ -173,8 +244,17 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span className="text-xs text-green-600 font-medium">Stored in Drive</span>
+              {uploadPhase === "extracting" ? (
+                <>
+                  <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
+                  <span className="text-xs text-indigo-600 font-medium">Extracting data…</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-xs text-green-600 font-medium">Saved</span>
+                </>
+              )}
             </div>
           </div>
 
@@ -184,27 +264,18 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
               src={localResume.driveViewLink!}
               className="w-full h-full"
               title="Resume Preview"
-              allow="autoplay"
             />
           </div>
 
           {/* Action buttons */}
           <div className="flex flex-wrap gap-2">
-            <a
-              href={localResume.driveViewLink!}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={localResume.driveViewLink!} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <ExternalLink className="h-3.5 w-3.5" />
                 Open PDF
               </Button>
             </a>
-            <a
-              href={`/api/user/resume/download/${localResume.driveFileId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={`/api/user/resume/download/${localResume.driveFileId}`} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Download className="h-3.5 w-3.5" />
                 Download
@@ -215,15 +286,28 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
               size="sm"
               className="flex items-center gap-2"
               onClick={() => fileRef.current?.click()}
+              disabled={isUploading}
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Re-upload
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={handleReextract}
+              loading={reextracting}
+              disabled={reextracting || isUploading}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {reextracting ? "Extracting…" : "Re-extract Data"}
             </Button>
             <Button
               variant="danger"
               size="sm"
               className="flex items-center gap-2 ml-auto"
               loading={deleting}
+              disabled={isUploading}
               onClick={handleDelete}
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -232,45 +316,314 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
           </div>
         </div>
       ) : (
-        <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6 text-center">
-          <AlertCircle className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-          <p className="text-sm text-gray-500">No resume uploaded yet.</p>
-          <p className="text-xs text-gray-400 mt-1">
-            Upload your resume to improve your profile score and enable skill extraction.
-          </p>
-        </div>
+        !isUploading && (
+          <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6 text-center">
+            <AlertCircle className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">No resume uploaded yet.</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Upload your resume to improve your profile score and enable skill extraction.
+            </p>
+          </div>
+        )
       )}
 
-      {/* ── Extracted Skills ─────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="h-4 w-4 text-blue-600" />
-          <h3 className="font-semibold text-gray-900 text-sm">Extracted Skills</h3>
-          <Badge variant="default" className="text-xs">AI</Badge>
+      {/* ── Extracted Resume Data ────────────────────────────────────── */}
+      {localResume?.parsedData ? (
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6 space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-blue-600" />
+              <h3 className="font-semibold text-gray-900">Data Extracted from Resume</h3>
+              <Badge variant="default" className="text-xs">AI</Badge>
+              <button
+                onClick={() => {
+                  console.log("[Resume JSON]", localResume.parsedData);
+                  fetch("/api/user/resume/debug", { credentials: "include" });
+                }}
+                className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2"
+              >
+                debug
+              </button>
+            </div>
+            <p className="text-xs text-gray-500">
+              If you want to change anything, visit your profile
+            </p>
+          </div>
+          <ResumeDataDisplay data={localResume.parsedData} />
         </div>
+      ) : hasResume && uploadPhase === "idle" && (
+        <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6 text-center">
+          <Sparkles className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+          <p className="text-sm text-gray-500">No data extracted yet.</p>
+          <p className="text-xs text-gray-400 mt-1 mb-3">
+            Click "Re-extract Data" to extract information from your resume.
+          </p>
+          <Button variant="outline" size="sm" onClick={handleReextract} loading={reextracting}>
+            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+            Extract Data
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
-        {/* TODO: connect to skills extractor model */}
-        {localResume?.extractedSkills && localResume.extractedSkills.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {localResume.extractedSkills.map((skill) => (
-              <Badge key={skill} variant="secondary">{skill}</Badge>
+// ─── Resume Data Display ──────────────────────────────────────────────────────
+
+function ResumeDataDisplay({ data }: { data: ParsedResumeData }) {
+  return (
+    <div className="space-y-4">
+
+      {/* Contact */}
+      {data.metaDetails && (
+        <Section icon={<MapPin className="h-4 w-4 text-blue-600" />} title="Contact Information">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+            <Field label="Name" value={data.metaDetails.name} />
+            <Field label="Email" value={data.metaDetails.email} />
+            {data.metaDetails.phone_no && <Field label="Phone" value={data.metaDetails.phone_no} />}
+            {data.metaDetails.address && (
+              <Field label="Location" value={`${data.metaDetails.address.city}, ${data.metaDetails.address.country}`} />
+            )}
+            {data.metaDetails.github_profile && (
+              <div className="flex items-center gap-1">
+                <Link className="h-3.5 w-3.5 text-gray-400" />
+                <a href={data.metaDetails.github_profile} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">GitHub</a>
+              </div>
+            )}
+            {data.metaDetails.linkedin && (
+              <div className="flex items-center gap-1">
+                <Link className="h-3.5 w-3.5 text-gray-400" />
+                <a href={data.metaDetails.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">LinkedIn</a>
+              </div>
+            )}
+          </div>
+        </Section>
+      )}
+
+      {/* Summary */}
+      {data.summary && (
+        <Section title="Summary">
+          <p className="text-sm text-gray-700">{data.summary}</p>
+        </Section>
+      )}
+
+      {/* Work History */}
+      {data.workHistory?.length > 0 && (
+        <Section icon={<Briefcase className="h-4 w-4 text-blue-600" />} title="Work History">
+          <div className="space-y-4">
+            {data.workHistory.map((w, i) => (
+              <div key={i} className="border-l-2 border-blue-200 pl-3 space-y-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-medium text-sm text-gray-900">{w.title}</p>
+                    <p className="text-xs text-gray-600">{w.company} · {w.location}</p>
+                  </div>
+                  <Badge variant="secondary" className="text-xs shrink-0">{w.type}</Badge>
+                </div>
+                <p className="text-xs text-gray-500">{w.period.start} – {w.period.isCurrent ? "Present" : w.period.end ?? "N/A"}</p>
+                {w.responsibilities?.length > 0 && <BulletList label="Responsibilities" items={w.responsibilities} />}
+                {w.achievements?.length > 0 && <BulletList label="Achievements" items={w.achievements} />}
+              </div>
             ))}
           </div>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-sm text-gray-500">
-              {hasResume
-                ? "Skill extraction will be available once the AI model is connected."
-                : "Upload your resume to enable automatic skill extraction."}
-            </p>
-            <div className="flex flex-wrap gap-2 opacity-30 pointer-events-none">
-              {["React", "TypeScript", "Node.js", "Python", "SQL"].map((s) => (
-                <Skeleton key={s} className="h-6 w-16 rounded-full" />
-              ))}
-            </div>
+        </Section>
+      )}
+
+      {/* Education */}
+      {data.education?.length > 0 && (
+        <Section icon={<GraduationCap className="h-4 w-4 text-blue-600" />} title="Education">
+          <div className="space-y-3">
+            {data.education.map((e, i) => (
+              <div key={i} className="border-l-2 border-green-200 pl-3 space-y-0.5">
+                <p className="font-medium text-sm text-gray-900">{e.institution}</p>
+                <p className="text-xs text-gray-600">{e.field.type} in {e.field.course}</p>
+                <p className="text-xs text-gray-500">{e.period.start} – {e.period.isCurrent ? "Present" : e.period.end ?? "N/A"}</p>
+                {e.output && <p className="text-xs text-gray-600">{e.output}</p>}
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+        </Section>
+      )}
+
+      {/* Skills */}
+      {data.skills?.length > 0 && (
+        <Section icon={<Code className="h-4 w-4 text-blue-600" />} title="Skills">
+          <div className="space-y-3">
+            {data.skills.map((s, i) => (
+              <div key={i}>
+                <div className="flex justify-between mb-1">
+                  <p className="text-sm font-medium text-gray-900">{s.field}</p>
+                  <span className="text-xs text-gray-500">{s.yearsOfExperience} yrs</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {s.tools.map((t, j) => (
+                    <Badge key={j} variant="secondary" className="text-xs">
+                      {t.name}{t.score ? ` (${t.score}%)` : ""}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Projects */}
+      {data.projects?.length > 0 && (
+        <Section icon={<Code className="h-4 w-4 text-blue-600" />} title="Projects">
+          <div className="space-y-4">
+            {data.projects.map((p, i) => (
+              <div key={i} className="border-l-2 border-purple-200 pl-3 space-y-1.5">
+                <p className="font-medium text-sm text-gray-900">{p.title}</p>
+                {p.role && <p className="text-xs text-gray-600">{p.role}</p>}
+                {p.problemStatement && <p className="text-xs text-gray-600 italic">{p.problemStatement}</p>}
+                <div className="flex flex-wrap gap-1">
+                  {p.techStack.map((t, j) => <Badge key={j} variant="secondary" className="text-xs">{t}</Badge>)}
+                </div>
+                {p.description?.length > 0 && <BulletList items={p.description} />}
+                <div className="flex gap-3 text-xs">
+                  {p.links.repo && <a href={p.links.repo} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Repo</a>}
+                  {p.links.live && <a href={p.links.live} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Live</a>}
+                  {p.links.demo && <a href={p.links.demo} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Demo</a>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Certifications */}
+      {data.certifications?.length > 0 && (
+        <Section icon={<Award className="h-4 w-4 text-blue-600" />} title="Certifications">
+          <div className="space-y-2">
+            {data.certifications.map((c, i) => (
+              <div key={i} className="flex justify-between gap-2">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{c.name}</p>
+                  <p className="text-xs text-gray-600">{c.issuer}</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {c.skillsEarned.map((s, j) => <Badge key={j} variant="secondary" className="text-xs">{s}</Badge>)}
+                  </div>
+                </div>
+                <span className="text-xs text-gray-500 shrink-0">{c.date}</span>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Languages */}
+      {data.languages?.length > 0 && (
+        <Section icon={<Globe className="h-4 w-4 text-blue-600" />} title="Languages">
+          <div className="flex flex-wrap gap-2">
+            {data.languages.map((l, i) => (
+              <Badge key={i} variant="secondary">{l.lang} – {l.proficiency}{l.score ? ` (${l.score})` : ""}</Badge>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Publications */}
+      {data.publications?.length > 0 && (
+        <Section icon={<BookOpen className="h-4 w-4 text-blue-600" />} title="Publications">
+          <div className="space-y-2">
+            {data.publications.map((p, i) => (
+              <div key={i}>
+                <a href={p.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-600 hover:underline">{p.title}</a>
+                <p className="text-xs text-gray-600">{p.platform} · {p.type} · {p.date}</p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {p.keywords.map((k, j) => <Badge key={j} variant="secondary" className="text-xs">{k}</Badge>)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Awards */}
+      {data.awards?.length > 0 && (
+        <Section icon={<Trophy className="h-4 w-4 text-blue-600" />} title="Awards">
+          <div className="space-y-2">
+            {data.awards.map((a, i) => (
+              <div key={i}>
+                <p className="text-sm font-medium text-gray-900">{a.name}</p>
+                <p className="text-xs text-gray-600">{a.issuingBody} · {a.date}</p>
+                {a.justification && <p className="text-xs text-gray-600 mt-0.5">{a.justification}</p>}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Affiliations */}
+      {data.affiliations?.length > 0 && (
+        <Section icon={<Users className="h-4 w-4 text-blue-600" />} title="Affiliations">
+          <div className="space-y-3">
+            {data.affiliations.map((a, i) => (
+              <div key={i} className="border-l-2 border-orange-200 pl-3 space-y-0.5">
+                <div className="flex justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{a.organization}</p>
+                    <p className="text-xs text-gray-600">{a.role} · {a.type}</p>
+                  </div>
+                  <span className="text-xs text-gray-500 shrink-0">{a.period.start} – {a.period.isCurrent ? "Present" : a.period.end ?? "N/A"}</span>
+                </div>
+                {a.impact?.length > 0 && <BulletList items={a.impact} />}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Interests */}
+      {data.interests?.length > 0 && (
+        <Section icon={<Heart className="h-4 w-4 text-blue-600" />} title="Interests">
+          <div className="space-y-2">
+            {data.interests.map((it, i) => (
+              <div key={i}>
+                <p className="text-sm font-medium text-gray-900">{it.activity}</p>
+                <p className="text-xs text-gray-600">{it.description}</p>
+                {it.commitmentMetric && <p className="text-xs text-gray-500">{it.commitmentMetric}</p>}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+    </div>
+  );
+}
+
+// ─── Small helpers ────────────────────────────────────────────────────────────
+
+function Section({ icon, title, children }: { icon?: React.ReactNode; title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-lg p-4 space-y-3">
+      <h4 className="font-semibold text-gray-900 flex items-center gap-2 text-sm">
+        {icon}
+        {title}
+      </h4>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <span className="text-gray-500 text-sm">{label}: </span>
+      <span className="font-medium text-sm">{value}</span>
+    </div>
+  );
+}
+
+function BulletList({ label, items }: { label?: string; items: string[] }) {
+  return (
+    <div>
+      {label && <p className="text-xs font-medium text-gray-700 mb-0.5">{label}:</p>}
+      <ul className="list-disc list-inside space-y-0.5">
+        {items.map((item, i) => <li key={i} className="text-xs text-gray-600">{item}</li>)}
+      </ul>
     </div>
   );
 }

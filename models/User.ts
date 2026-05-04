@@ -26,6 +26,7 @@ export interface IResume {
     driveViewLink?: string | null;
     uploadedAt?: Date | null;
     extractedSkills: string[]; // TODO: connect to skills extractor model
+    parsedData?: any | null; // Stores the full parsed resume structure
 }
 
 export interface IAppliedInternship {
@@ -91,6 +92,7 @@ const ResumeSchema = new Schema<IResume>(
         driveViewLink: { type: String, default: null },
         uploadedAt: { type: Date, default: null },
         extractedSkills: { type: [String], default: [] }, // TODO: connect to skills extractor model
+        parsedData: { type: Schema.Types.Mixed, default: null },
     },
     { _id: false },
 );

@@ -133,6 +133,24 @@ async function pushToPipeline(items, source, label) {
                 continue;
             }
 
+            // Parse duration from duration_string if duration object not provided
+            let duration = item.duration;
+            if (!duration && item.duration_string) {
+                const match =
+                    item.duration_string.match(/(\d+)\s*(week|month)/i);
+                if (match) {
+                    duration = {
+                        value: parseInt(match[1], 10),
+                        unit: match[2].toLowerCase().startsWith("week")
+                            ? "weeks"
+                            : "months",
+                    };
+                }
+            }
+            if (!duration) {
+                duration = { value: 3, unit: "months" }; // fallback
+            }
+
             const nextCheckAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
             await col.insertOne({
@@ -164,7 +182,7 @@ async function pushToPipeline(items, source, label) {
                     currency: null,
                     period: null,
                 },
-                duration: item.duration || { value: 3, unit: "months" },
+                duration,
                 experienceRequired: { unit: "months" },
                 fingerprint,
                 linkVerification: {

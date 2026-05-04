@@ -40,3 +40,30 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# debug/test scripts
+check_internships.js
+debug_internships.js
+test_api.js
+
+# test scripts
+scripts/test_*.py
+scripts/test_*.js
+scripts/test_*.mjs
+
+# scraped data (optional - uncomment if you don't want to commit scraped data)
+data/internships_*.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

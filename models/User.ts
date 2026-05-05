@@ -2,31 +2,12 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 // ─── Sub-document interfaces ──────────────────────────────────────────────────
 
-export interface IEducation {
-    degree: string;
-    field: string;
-    institution: string;
-    startDate: Date;
-    endDate?: Date | null;
-    grade?: string | null;
-}
-
-export interface IExperience {
-    type: "job" | "internship";
-    title: string;
-    company: string;
-    startDate: Date;
-    endDate?: Date | null;
-    current: boolean;
-    description?: string | null;
-}
-
 export interface IResume {
     driveFileId?: string | null;
     driveViewLink?: string | null;
     uploadedAt?: Date | null;
-    extractedSkills: string[]; // TODO: connect to skills extractor model
-    parsedData?: any | null; // Stores the full parsed resume structure
+    // parsedData matches ParsedResumeData from @/types — stored as Mixed in Mongo
+    parsedData?: any | null;
 }
 
 export interface IAppliedInternship {
@@ -48,12 +29,11 @@ export interface IUser extends Document {
     city?: string | null;
     state?: string | null;
     country?: string | null;
-    skills: string[];
-    education: IEducation[];
-    experiences: IExperience[];
     resume: IResume;
     appliedInternships: IAppliedInternship[];
     savedInternships: mongoose.Types.ObjectId[];
+    recommendedInternships: mongoose.Types.ObjectId[];
+    recommendedUpdatedAt?: Date | null;
     profileCompletionScore: number; // 0–100, computed field
     createdAt: Date;
     updatedAt: Date;
@@ -61,38 +41,14 @@ export interface IUser extends Document {
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 
-const EducationSchema = new Schema<IEducation>(
+const ResumeSchema = new Schema(
     {
-        degree: { type: String, required: true },
-        field: { type: String, required: true },
-        institution: { type: String, required: true },
-        startDate: { type: Date, required: true },
-        endDate: { type: Date, default: null },
-        grade: { type: String, default: null },
-    },
-    { _id: true },
-);
-
-const ExperienceSchema = new Schema<IExperience>(
-    {
-        type: { type: String, enum: ["job", "internship"], required: true },
-        title: { type: String, required: true },
-        company: { type: String, required: true },
-        startDate: { type: Date, required: true },
-        endDate: { type: Date, default: null },
-        current: { type: Boolean, default: false },
-        description: { type: String, default: null },
-    },
-    { _id: true },
-);
-
-const ResumeSchema = new Schema<IResume>(
-    {
-        driveFileId: { type: String, default: null },
-        driveViewLink: { type: String, default: null },
-        uploadedAt: { type: Date, default: null },
-        extractedSkills: { type: [String], default: [] }, // TODO: connect to skills extractor model
-        parsedData: { type: Schema.Types.Mixed, default: null },
+        driveFileId:  { type: String, default: null },
+        driveViewLink:{ type: String, default: null },
+        uploadedAt:   { type: Date,   default: null },
+        // parsedData stores the full Resume structure from types/resume.ts
+        // Using Mixed because the nested schema is deeply nested and changes with the Resume type
+        parsedData:   { type: Schema.Types.Mixed, default: null },
     },
     { _id: false },
 );
@@ -131,22 +87,22 @@ const UserSchema = new Schema<IUser>(
             lowercase: true,
             trim: true,
         },
-        password: { type: String, required: true },
-        role: { type: String, enum: ["user", "admin"], default: "user" },
+        password:       { type: String, required: true },
+        role:           { type: String, enum: ["user", "admin"], default: "user" },
         profilePicture: { type: String, default: null },
-        phone: { type: String, default: null },
-        city: { type: String, default: null },
-        state: { type: String, default: null },
-        country: { type: String, default: null },
-        skills: { type: [String], default: [] },
-        education: { type: [EducationSchema], default: [] },
-        experiences: { type: [ExperienceSchema], default: [] },
+        phone:          { type: String, default: null },
+        city:           { type: String, default: null },
+        state:          { type: String, default: null },
+        country:        { type: String, default: null },
         resume: {
             type: ResumeSchema,
-            default: () => ({ extractedSkills: [] }),
+            default: () => ({}),
         },
         appliedInternships: { type: [AppliedInternshipSchema], default: [] },
-        savedInternships: [{ type: Schema.Types.ObjectId, ref: "Internship" }],
+        savedInternships:   [{ type: Schema.Types.ObjectId, ref: "Internship" }],
+        recommendedInternships: [{ type: Schema.Types.ObjectId, ref: "Internship" }],
+        recommendedUpdatedAt: { type: Date, default: null },
+        recommendedScores: { type: Schema.Types.Mixed, default: [] },
         profileCompletionScore: { type: Number, default: 0, min: 0, max: 100 },
     },
     {

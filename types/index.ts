@@ -1,31 +1,9 @@
 // ─── User Types ───────────────────────────────────────────────────────────────
 
-export interface Education {
-    _id?: string;
-    degree: string;
-    field: string;
-    institution: string;
-    startDate: string;
-    endDate?: string | null;
-    grade?: string | null;
-}
-
-export interface Experience {
-    _id?: string;
-    type: "job" | "internship";
-    title: string;
-    company: string;
-    startDate: string;
-    endDate?: string | null;
-    current: boolean;
-    description?: string | null;
-}
-
 export interface Resume {
     driveFileId?: string | null;
     driveViewLink?: string | null;
     uploadedAt?: string | null;
-    extractedSkills: string[]; // TODO: connect to skills extractor model
     parsedData?: ParsedResumeData | null;
 }
 
@@ -164,12 +142,12 @@ export interface User {
     city?: string | null;
     state?: string | null;
     country?: string | null;
-    skills: string[];
-    education: Education[];
-    experiences: Experience[];
     resume: Resume;
     appliedInternships: AppliedInternship[];
     savedInternships: string[];
+    recommendedInternships?: string[];
+    recommendedScores?: { id: string; score: number }[];
+    recommendedUpdatedAt?: string | null;
     profileCompletionScore: number;
     createdAt: string;
     updatedAt: string;

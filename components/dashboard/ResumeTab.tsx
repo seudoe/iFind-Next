@@ -5,7 +5,7 @@ import {
   Upload, FileText, RefreshCw, Sparkles,
   CheckCircle, AlertCircle, Trash2, Download, ExternalLink,
   Briefcase, GraduationCap, Code, Award, Globe, BookOpen,
-  Users, Trophy, Heart, MapPin, Link, Loader2,
+  Users, Trophy, Heart, MapPin, Link, Loader2, DatabaseZap, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -22,15 +22,20 @@ interface ResumeTabProps {
 type UploadPhase = "idle" | "uploading" | "extracting";
 
 export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
-  const [dragging, setDragging]       = useState(false);
-  const [uploadPhase, setUploadPhase] = useState<UploadPhase>("idle");
-  const [deleting, setDeleting]       = useState(false);
-  const [reextracting, setReextracting] = useState(false);
-  const [localResume, setLocalResume] = useState(user.resume);
+  const [dragging, setDragging]           = useState(false);
+  const [uploadPhase, setUploadPhase]     = useState<UploadPhase>("idle");
+  const [deleting, setDeleting]           = useState(false);
+  const [reextracting, setReextracting]   = useState(false);
+  const [applying, setApplying]           = useState(false);
+  const [showConfirm, setShowConfirm]     = useState(false);
+  // pendingData holds freshly extracted data waiting for user confirmation
+  const [pendingData, setPendingData]     = useState<ParsedResumeData | null>(null);
+  const [localResume, setLocalResume]     = useState(user.resume);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const hasResume  = !!localResume?.driveViewLink;
+  const hasResume   = !!localResume?.driveViewLink;
   const isUploading = uploadPhase !== "idle";
+  const hasExistingData = !!localResume?.parsedData;
 
   // ── Phase 1: upload file, Phase 2: extract data ──────────────────────────
   const handleFile = async (file: File) => {
@@ -90,17 +95,48 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Extraction failed");
 
-      setLocalResume({ ...uploadedResume!, parsedData: json.data.parsedData });
-      toast.success("Data extracted from resume!");
-      onResumeUpdate?.();
+      const extracted: ParsedResumeData = json.data.parsedData;
+
+      if (hasExistingData) {
+        // Ask user before overwriting existing data
+        setPendingData(extracted);
+        setShowConfirm(true);
+      } else {
+        // No existing data — apply immediately
+        await applyParsedData(extracted, uploadedResume!);
+      }
     } catch (err) {
-      // Extraction failure is non-fatal — resume is still saved
       toast.error(
         err instanceof Error ? err.message : "Extraction failed — you can retry with Re-extract"
       );
     } finally {
       setUploadPhase("idle");
       if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  // ── Apply parsed data to DB ───────────────────────────────────────────────
+  const applyParsedData = async (data: ParsedResumeData, base?: typeof localResume) => {
+    setApplying(true);
+    try {
+      const res = await fetch("/api/user/resume/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ parsedData: data }),
+        credentials: "include",
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to apply data");
+
+      setLocalResume({ ...(base ?? localResume), parsedData: data });
+      setPendingData(null);
+      setShowConfirm(false);
+      toast.success("Resume data updated!");
+      onResumeUpdate?.();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to apply data");
+    } finally {
+      setApplying(false);
     }
   };
 
@@ -143,9 +179,13 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
         }
         return;
       }
-      setLocalResume({ ...localResume, parsedData: json.data.parsedData });
-      toast.success("Resume data re-extracted!");
-      onResumeUpdate?.();
+      const extracted: ParsedResumeData = json.data.parsedData;
+      if (hasExistingData) {
+        setPendingData(extracted);
+        setShowConfirm(true);
+      } else {
+        await applyParsedData(extracted);
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Re-extraction failed");
     } finally {
@@ -168,6 +208,54 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
           Upload your resume in PDF format. It will be stored securely.
         </p>
       </div>
+
+      {/* ── Confirm overwrite modal ──────────────────────────────────── */}
+      {showConfirm && pendingData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <DatabaseZap className="h-5 w-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Update resume data?</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">New data was extracted from your resume</p>
+                </div>
+              </div>
+              <button
+                onClick={() => { setShowConfirm(false); setPendingData(null); }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 space-y-1">
+              <p className="font-medium">⚠️ Your existing resume data will be replaced.</p>
+              <p>Make sure you have your old resume file saved so you can re-upload it to recover the previous data if needed.</p>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => { setShowConfirm(false); setPendingData(null); }}
+              >
+                Keep existing data
+              </Button>
+              <Button
+                size="sm"
+                loading={applying}
+                onClick={() => applyParsedData(pendingData)}
+                className="bg-amber-600 hover:bg-amber-700 text-white"
+              >
+                Yes, update data
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Upload Zone ─────────────────────────────────────────────── */}
       <div

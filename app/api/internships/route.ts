@@ -26,13 +26,18 @@ export async function GET(req: NextRequest) {
 
         const stipendMin = searchParams.get("stipendMin");
         const stipendMax = searchParams.get("stipendMax");
-        if (stipendMin || stipendMax) {
+
+        // Only apply stipend amount filter for paid internships
+        // Unpaid internships have stipend.amount: null, which won't match $gte/$lte
+        if (stipendType === "paid" && (stipendMin || stipendMax)) {
             filter["stipend.amount"] = {};
             if (stipendMin)
                 filter["stipend.amount"].$gte = parseInt(stipendMin);
             if (stipendMax)
                 filter["stipend.amount"].$lte = parseInt(stipendMax);
         }
+        // Note: If stipendType is "any" or "unpaid", we don't apply amount filter
+        // This allows unpaid internships (amount: null) to be included
 
         if (searchParams.get("remote") === "true") filter.isRemote = true;
 

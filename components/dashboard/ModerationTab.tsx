@@ -166,7 +166,10 @@ export function ModerationTab({ user }: { user: User }) {
     }, []);
 
     useEffect(() => {
-        fetchData(1, filter);
+        const loadData = async () => {
+            await fetchData(1, filter);
+        };
+        loadData();
     }, [filter, fetchData]);
 
     const handleApprove = async (id: string) => {
@@ -233,6 +236,53 @@ export function ModerationTab({ user }: { user: User }) {
             toast.success("Link re-verified");
         } catch {
             toast.error("Re-verification failed");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleBulkReverify = async () => {
+        setActionLoading("bulk_reverify");
+        try {
+            const res = await fetch(`/api/admin/moderation/bulk-reverify`, {
+                method: "POST",
+                credentials: "include",
+            });
+            const json = await res.json();
+            if (!json.success) throw new Error(json.error);
+            toast.success(
+                `Re-verified ${json.processed} links, updated ${json.updated}`,
+            );
+            // Refresh the data
+            fetchData(page, filter);
+        } catch {
+            toast.error("Bulk re-verification failed");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleApproveHighScore = async () => {
+        setActionLoading("approve_high_score");
+        try {
+            const res = await fetch(
+                `/api/admin/moderation/approve-high-score`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ threshold: 80 }),
+                },
+            );
+            const json = await res.json();
+            if (!json.success) throw new Error(json.error);
+            toast.success(
+                `Approved ${json.approved} internships with score >= ${json.threshold}`,
+            );
+            // Refresh the data
+            fetchData(page, filter);
+        } catch {
+            toast.error("Failed to approve high score internships");
         } finally {
             setActionLoading(null);
         }
@@ -308,9 +358,27 @@ export function ModerationTab({ user }: { user: User }) {
                         {label}
                     </button>
                 ))}
-                <span className="ml-auto text-sm text-gray-400">
-                    {total} total
-                </span>
+                <div className="ml-auto flex gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleBulkReverify}
+                        disabled={!!actionLoading}
+                        loading={actionLoading === "bulk_reverify"}
+                    >
+                        Re-verify All Pending
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="primary"
+                        onClick={handleApproveHighScore}
+                        disabled={!!actionLoading}
+                        loading={actionLoading === "approve_high_score"}
+                    >
+                        Approve High Score (&gt;80)
+                    </Button>
+                </div>
+                <span className="text-sm text-gray-400">{total} total</span>
             </div>
 
             {/* Table */}

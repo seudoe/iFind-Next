@@ -153,6 +153,16 @@ async function pushToPipeline(items, source, label) {
 
             const nextCheckAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
+            // Parse deadline_date if provided
+            let deadlineDate = null;
+            if (item.deadline_date) {
+                try {
+                    deadlineDate = new Date(item.deadline_date);
+                } catch (e) {
+                    // Invalid date, leave as null
+                }
+            }
+
             await col.insertOne({
                 name,
                 company,
@@ -173,9 +183,16 @@ async function pushToPipeline(items, source, label) {
                     : item.field
                       ? [item.field]
                       : null,
+                responsibilities: Array.isArray(item.responsibilities)
+                    ? item.responsibilities
+                    : null,
+                perks: Array.isArray(item.perks) ? item.perks : null,
+                tags: Array.isArray(item.tags) ? item.tags : null,
+                openings: item.openings || null,
                 source,
                 isActive: true,
                 datePublished: new Date(),
+                deadlineDate,
                 stipend: item.stipend || {
                     type: "unpaid",
                     amount: null,

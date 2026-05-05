@@ -1,18 +1,19 @@
 [
   {
-    "name": "Branding/Social Media",
-    "company": "Moledro",
-    "apply_link": "https://internshala.com/internship/detail/branding-social-media-internship-in-delhi-at-moledro1777870618",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-06-03T00:00:00",
+    "name": "Software Development",
+    "company": "Anakin",
+    "apply_link": "https://internshala.com/internship/detail/software-development-internship-in-bangalore-at-anakin1777439557",
+    "date_published": "2026-05-05T13:44:50.196479",
+    "deadline_date": "2026-05-29T00:00:00",
     "country": "india",
-    "city": "delhi",
+    "city": "bangalore",
     "state": null,
     "is_remote": false,
     "skills": [
-      "Adobe Creative Suite",
-      "Canva",
-      "Video Editing"
+      "Algorithms",
+      "Data Structures",
+      "Java",
+      "Python"
     ],
     "degree": [
       "Bachelor's degree in Computer Science or related field"
@@ -21,44 +22,60 @@
       "Computer Science",
       "Software Engineering"
     ],
-    "summary": "Brainstorm with the team for new ideas and strategies for effective content Conducting in-depth research on industry-related topics to develop original and innovative content Develop copy on a wide va",
+    "summary": "Anakin is building a large-scale data engine that powers real-time competitive intelligence for global internet companies by continuously collecting and structuring massive volumes of public web data.",
     "responsibilities": [
-      "Brainstorm with the team for new ideas and strategies for effective content",
-      "Conducting in-depth research on industry-related topics to develop original and innovative content",
-      "Develop copy on a wide variety of topics for multiple platforms (such as the website, blogs, product descriptions and social media)",
-      "Create eye-catching and innovative headlines and captions",
-      "Assisting the marketing team in developing content for advertising campaigns",
-      "Creating compelling headlines, captions and body copy that will capture the attention of the target audience",
-      "Identifying customers' needs and recommending new content to address gaps in the company's current content"
+      "Anakin is building a large-scale data engine that powers real-time competitive intelligence for global internet companies by continuously collecting and structuring massive volumes of public web data. This involves solving complex engineering challenges like handling scale, ensuring system reliability, navigating dynamic websites, overcoming anti-bot mechanisms, and dealing with unpredictable edge cases   making it far from theoretical or toy problems.",
+      "This internship offers a hands-on backend and systems experience where developers actively contribute to production systems, including backend services, APIs, data pipelines, and scraping infrastructure. Interns are expected to take ownership   understanding problems, writing functional code, debugging issues, and improving system performance   rather than passively observing, making it ideal for those aiming to become strong engineers early in their careers.",
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Build backend services, APIs, and data pipelines",
+      "2. Work on web scraping and automation for dynamic systems",
+      "3. Debug production issues and improve reliability/performance",
+      "4. Write clean, maintainable, testable code",
+      "5. Participate in code reviews and engineering discussions",
+      "6. Ship features end-to-end with ownership",
+      "7. Identify bugs, bottlenecks, and system improvements proactively",
+      "Success Milestones:",
+      "1. 30 Days: Understand systems, complete onboarding, start contributing",
+      "2. 60 Days: Ship a backend component or system improvement",
+      "3. 90 Days: Independently own and deliver scoped problems",
+      "4. End: Deliver real production work and earn PPO based on performance"
     ],
     "perks": [
       "Certificate",
-      "Informal dress code"
+      "Letter of recommendation",
+      "Flexible work hours",
+      "Informal dress code",
+      "5 days a week",
+      "Free snacks & beverages",
+      "Job offer"
     ],
-    "openings": 1,
+    "openings": 4,
     "stipend": {
       "type": "paid",
-      "amount": 10001,
+      "amount": 20000,
       "currency": "INR",
       "period": "monthly"
     },
-    "duration_string": "2 Months",
+    "duration_string": "6 Months",
     "source": "web_scraping"
   },
   {
-    "name": "Unity Developer",
-    "company": "AR Genie Inc.",
-    "apply_link": "https://internshala.com/internship/detail/unity-developer-internship-in-dehradun-at-ar-genie-inc1776163212",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-05-14T00:00:00",
+    "name": "Flutter Development",
+    "company": "Adigos Technologies LLP",
+    "apply_link": "https://internshala.com/internship/detail/flutter-development-internship-in-vashi-at-adigos-technologies-llp1777703659",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-01T00:00:00",
     "country": "india",
-    "city": "dehradun",
+    "city": "vashi",
     "state": null,
     "is_remote": false,
     "skills": [
-      "Augmented Reality (AR)",
-      "C#",
-      "Unity Engine"
+      "Android",
+      "Cloud Firestore",
+      "Dart",
+      "Firebase",
+      "iOS",
+      "REST API"
     ],
     "degree": [
       "Bachelor's degree in Computer Science or related field"
@@ -67,38 +84,158 @@
       "Computer Science",
       "Software Engineering"
     ],
-    "summary": "We are looking for a passionate 'Unity Developer Intern' to join our team at AR Genie Inc. As a 'Unity Developer Intern,' you will have the opportunity to work on cutting-edge projects in the augmente",
+    "summary": "We are thrilled to offer an exciting opportunity for a Flutter Development intern at Adigos Technologies LLP! If you are passionate about mobile app development and possess skills in REST API, Dart, i",
     "responsibilities": [
-      "We are looking for a passionate 'Unity Developer Intern' to join our team at AR Genie Inc. As a 'Unity Developer Intern,' you will have the opportunity to work on cutting-edge projects in the augmented reality space.",
-      "Selected intern's day-to-day responsibilities include:",
-      "1. Collaborating with the development team to create immersive AR experiences using Unity 3D.",
-      "2. Work on AR Foundation in Unity",
-      "3. Implementing interactive features and functionality within Unity Engine.",
-      "4. Optimizing AR applications for performance across various AR devices like various AR Glass and iPad.",
-      "5. Testing and debugging applications to ensure a smooth user experience.",
-      "6. Staying up-to-date with the latest Unity technologies and trends.",
-      "7. Assisting in the design and implementation of AR features.",
-      "8. Contributing ideas and solutions to enhance the overall AR experience.",
-      "If you are a creative problem-solver with a strong understanding of Unity 3D and a passion for AR technology, we want to hear from you! Join us at AR Genie Inc. and help us create magical AR experiences for our users. Apply now and take the first step towards a rewarding career in AR development."
+      "We are thrilled to offer an exciting opportunity for a Flutter Development intern at Adigos Technologies LLP! If you are passionate about mobile app development and possess skills in REST API, Dart, iOS, Android, Firebase, and Cloud Firestore, then this position is perfect for you. As a part of our dynamic team, you will have the chance to work on cutting-edge projects and gain valuable experience in the field.",
+      "Key Responsibilities:",
+      "1. Develop and implement mobile applications using Flutter framework",
+      "2. Utilize REST API to integrate backend services into mobile apps",
+      "3. Collaborate with cross-functional teams to design and deploy mobile solutions",
+      "4. Debug and troubleshoot issues to ensure smooth app performance",
+      "5. Stay updated on the latest trends and technologies in mobile development",
+      "6. Test and optimize app functionalities for a seamless user experience",
+      "7. Assist in maintaining and updating existing mobile applications",
+      "If you are a proactive and innovative individual looking to kickstart your career in mobile development, apply now and join our team at Adigos Technologies LLP!"
     ],
     "perks": [
-      "Certificate"
+      "Certificate",
+      "Letter of recommendation",
+      "Flexible work hours"
     ],
     "openings": 2,
     "stipend": {
       "type": "paid",
-      "amount": 10000,
+      "amount": 5000,
       "currency": "INR",
       "period": "monthly"
     },
-    "duration_string": "3 Months",
+    "duration_string": "6 Months",
+    "source": "web_scraping"
+  },
+  {
+    "name": "Full Stack Development",
+    "company": "Helios Tech Labs",
+    "apply_link": "https://internshala.com/internship/detail/full-stack-development-internship-in-multiple-locations-at-helios-tech-labs1777888301",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-03T00:00:00",
+    "country": "india",
+    "city": "chandigarh,-mohali,-sahibzada-ajit-singh-nagar,-punjab,-uttarakhand,-himachal-pradesh,-haryana",
+    "state": null,
+    "is_remote": false,
+    "skills": [
+      "CSS",
+      "Cursor (GenAI)",
+      "Effective Communication",
+      "English Proficiency (Spoken)",
+      "English Proficiency (Written)",
+      "HTML",
+      "JavaScript",
+      "MongoDB",
+      "MySQL",
+      "Negotiation",
+      "Node.js",
+      "PHP",
+      "Presentation skills",
+      "Python",
+      "React",
+      "Web development"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "We are looking for a passionate and driven full stack development intern who has a strong interest in AI tools and modern development practices. This internship is ideal for candidates who love buildi",
+    "responsibilities": [
+      "We are looking for a passionate and driven full stack development intern who has a strong interest in AI tools and modern development practices. This internship is ideal for candidates who love building projects, experimenting with AI-powered tools, and continuously upgrading their technical skills.",
+      "1. Assist in designing, developing, and maintaining web applications (frontend + backend).",
+      "2. Build responsive user interfaces using modern frameworks.",
+      "3. Develop REST APIs and integrate third-party services.",
+      "4. Use AI tools (e.g., ChatGPT, Copilot, APIs) to improve development efficiency and problem-solving.",
+      "5. Contribute to AI-powered features such as chatbots, automation tools, smart dashboards, or AI-based search.",
+      "6. Debug, test, and optimize applications for performance and scalability.",
+      "7. Document development processes and project workflows."
+    ],
+    "perks": [
+      "Certificate"
+    ],
+    "openings": 15,
+    "stipend": {
+      "type": "paid",
+      "amount": 12000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "6 Months",
+    "source": "web_scraping"
+  },
+  {
+    "name": "Software Development",
+    "company": "Sarvamangal Education Trust",
+    "apply_link": "https://internshala.com/internship/detail/software-development-internship-in-mumbai-at-sarvamangal-education-trust1777958374",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-04T00:00:00",
+    "country": "india",
+    "city": "mumbai",
+    "state": null,
+    "is_remote": false,
+    "skills": [
+      "APIs",
+      "CSS",
+      "Figma",
+      "Git",
+      "HTML",
+      "JavaScript",
+      "MongoDB",
+      "Node.js",
+      "Python",
+      "React",
+      "REST API",
+      "UI & UX Design"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "Selected intern's day-to-day responsibilities include: 1. Working on building a unified CRM platform for managing donors, volunteers, campaigns, and events. 2. Developing and integrating REST APIs, da",
+    "responsibilities": [
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Working on building a unified CRM platform for managing donors, volunteers, campaigns, and events.",
+      "2. Developing and integrating REST APIs, dashboards, and automation systems.",
+      "3. Building responsive frontend interfaces using React.js.",
+      "4. Designing user-friendly UI/UX flows, wireframes, and high-fidelity designs.",
+      "5. Collaborating with backend, frontend, and design teams for seamless execution.",
+      "6. Working on real-world integrations (WhatsApp APIs, email APIs, and payment gateways).",
+      "7. Assisting in building automation systems (email campaigns and bot systems).",
+      "8. Writing clean, scalable, and well-documented code and designs.",
+      "9. Using AI tools (ChatGPT, Copilot, and Figma AI) to improve productivity.",
+      "10. Participating in weekly sprints and review meetings."
+    ],
+    "perks": [
+      "Certificate",
+      "Letter of recommendation",
+      "Flexible work hours"
+    ],
+    "openings": 10,
+    "stipend": {
+      "type": "paid",
+      "amount": 8000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "6 Months",
     "source": "web_scraping"
   },
   {
     "name": "Game Development",
     "company": "RJPT Informatics",
     "apply_link": "https://internshala.com/internship/detail/game-development-internship-in-raipur-at-rjpt-informatics1777527395",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.198038",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "raipur",
@@ -185,225 +322,10 @@
     "source": "web_scraping"
   },
   {
-    "name": "Flutter Development",
-    "company": "Adigos Technologies LLP",
-    "apply_link": "https://internshala.com/internship/detail/flutter-development-internship-in-vashi-at-adigos-technologies-llp1777703659",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-06-01T00:00:00",
-    "country": "india",
-    "city": "vashi",
-    "state": null,
-    "is_remote": false,
-    "skills": [
-      "Android",
-      "Cloud Firestore",
-      "Dart",
-      "Firebase",
-      "iOS",
-      "REST API"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "We are thrilled to offer an exciting opportunity for a Flutter Development intern at Adigos Technologies LLP! If you are passionate about mobile app development and possess skills in REST API, Dart, i",
-    "responsibilities": [
-      "We are thrilled to offer an exciting opportunity for a Flutter Development intern at Adigos Technologies LLP! If you are passionate about mobile app development and possess skills in REST API, Dart, iOS, Android, Firebase, and Cloud Firestore, then this position is perfect for you. As a part of our dynamic team, you will have the chance to work on cutting-edge projects and gain valuable experience in the field.",
-      "Key Responsibilities:",
-      "1. Develop and implement mobile applications using Flutter framework",
-      "2. Utilize REST API to integrate backend services into mobile apps",
-      "3. Collaborate with cross-functional teams to design and deploy mobile solutions",
-      "4. Debug and troubleshoot issues to ensure smooth app performance",
-      "5. Stay updated on the latest trends and technologies in mobile development",
-      "6. Test and optimize app functionalities for a seamless user experience",
-      "7. Assist in maintaining and updating existing mobile applications",
-      "If you are a proactive and innovative individual looking to kickstart your career in mobile development, apply now and join our team at Adigos Technologies LLP!"
-    ],
-    "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Flexible work hours"
-    ],
-    "openings": 2,
-    "stipend": {
-      "type": "paid",
-      "amount": 5000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "Full Stack Development",
-    "company": "Helios Tech Labs",
-    "apply_link": "https://internshala.com/internship/detail/full-stack-development-internship-in-multiple-locations-at-helios-tech-labs1777888301",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-06-03T00:00:00",
-    "country": "india",
-    "city": "chandigarh,-mohali,-sahibzada-ajit-singh-nagar,-punjab,-uttarakhand,-himachal-pradesh,-haryana",
-    "state": null,
-    "is_remote": false,
-    "skills": [
-      "CSS",
-      "Cursor (GenAI)",
-      "Effective Communication",
-      "English Proficiency (Spoken)",
-      "English Proficiency (Written)",
-      "HTML",
-      "JavaScript",
-      "MongoDB",
-      "MySQL",
-      "Negotiation",
-      "Node.js",
-      "PHP",
-      "Presentation skills",
-      "Python",
-      "React",
-      "Web development"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "We are looking for a passionate and driven full stack development intern who has a strong interest in AI tools and modern development practices. This internship is ideal for candidates who love buildi",
-    "responsibilities": [
-      "We are looking for a passionate and driven full stack development intern who has a strong interest in AI tools and modern development practices. This internship is ideal for candidates who love building projects, experimenting with AI-powered tools, and continuously upgrading their technical skills.",
-      "1. Assist in designing, developing, and maintaining web applications (frontend + backend).",
-      "2. Build responsive user interfaces using modern frameworks.",
-      "3. Develop REST APIs and integrate third-party services.",
-      "4. Use AI tools (e.g., ChatGPT, Copilot, APIs) to improve development efficiency and problem-solving.",
-      "5. Contribute to AI-powered features such as chatbots, automation tools, smart dashboards, or AI-based search.",
-      "6. Debug, test, and optimize applications for performance and scalability.",
-      "7. Document development processes and project workflows."
-    ],
-    "perks": [
-      "Certificate"
-    ],
-    "openings": 15,
-    "stipend": {
-      "type": "paid",
-      "amount": 12000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "Game 3D Asset Development",
-    "company": "Jugaad Interactives",
-    "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-game-3d-asset-development-internship-at-jugaad-interactives1777882713",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-06-03T00:00:00",
-    "country": "india",
-    "city": "work-from-home",
-    "state": null,
-    "is_remote": true,
-    "skills": [
-      "Blender 3D",
-      "Canva",
-      "Substance Painter"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Selected intern's day-to-day responsibilities include: 1. Create 3D game assets as per the requirements following agile methodology 2. Update the team on development progress during bi-weekly meetings",
-    "responsibilities": [
-      "Selected intern's day-to-day responsibilities include:",
-      "1. Create 3D game assets as per the requirements following agile methodology",
-      "2. Update the team on development progress during bi-weekly meetings (Tuesday & Friday, 11 PM to 12:30 AM) on the Discord server",
-      "3. Continuously improve and refine assets based on feedback and project needs"
-    ],
-    "perks": [
-      "Certificate",
-      "Flexible work hours"
-    ],
-    "openings": 1,
-    "stipend": {
-      "type": "paid",
-      "amount": 5000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "Software Development",
-    "company": "Anakin",
-    "apply_link": "https://internshala.com/internship/detail/software-development-internship-in-bangalore-at-anakin1777439557",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-05-29T00:00:00",
-    "country": "india",
-    "city": "bangalore",
-    "state": null,
-    "is_remote": false,
-    "skills": [
-      "Algorithms",
-      "Data Structures",
-      "Java",
-      "Python"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Anakin is building a large-scale data engine that powers real-time competitive intelligence for global internet companies by continuously collecting and structuring massive volumes of public web data.",
-    "responsibilities": [
-      "Anakin is building a large-scale data engine that powers real-time competitive intelligence for global internet companies by continuously collecting and structuring massive volumes of public web data. This involves solving complex engineering challenges like handling scale, ensuring system reliability, navigating dynamic websites, overcoming anti-bot mechanisms, and dealing with unpredictable edge cases   making it far from theoretical or toy problems.",
-      "This internship offers a hands-on backend and systems experience where developers actively contribute to production systems, including backend services, APIs, data pipelines, and scraping infrastructure. Interns are expected to take ownership   understanding problems, writing functional code, debugging issues, and improving system performance   rather than passively observing, making it ideal for those aiming to become strong engineers early in their careers.",
-      "Selected intern's day-to-day responsibilities include:",
-      "1. Build backend services, APIs, and data pipelines",
-      "2. Work on web scraping and automation for dynamic systems",
-      "3. Debug production issues and improve reliability/performance",
-      "4. Write clean, maintainable, testable code",
-      "5. Participate in code reviews and engineering discussions",
-      "6. Ship features end-to-end with ownership",
-      "7. Identify bugs, bottlenecks, and system improvements proactively",
-      "Success Milestones:",
-      "1. 30 Days: Understand systems, complete onboarding, start contributing",
-      "2. 60 Days: Ship a backend component or system improvement",
-      "3. 90 Days: Independently own and deliver scoped problems",
-      "4. End: Deliver real production work and earn PPO based on performance"
-    ],
-    "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Flexible work hours",
-      "Informal dress code",
-      "5 days a week",
-      "Free snacks & beverages",
-      "Job offer"
-    ],
-    "openings": 4,
-    "stipend": {
-      "type": "paid",
-      "amount": 20000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
     "name": "Python & Windows Desktop C#",
     "company": "VNS Enterprises",
     "apply_link": "https://internshala.com/internship/detail/python-windows-desktop-c-internship-in-noida-at-vns-enterprises1777711438",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.198038",
     "deadline_date": "2026-06-01T00:00:00",
     "country": "india",
     "city": "noida",
@@ -455,19 +377,19 @@
     "source": "web_scraping"
   },
   {
-    "name": "Flutter Development",
-    "company": "Filmylog",
-    "apply_link": "https://internshala.com/internship/detail/flutter-development-internship-in-delhi-at-filmylog1777874142",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-06-03T00:00:00",
+    "name": "Unity Developer",
+    "company": "AR Genie Inc.",
+    "apply_link": "https://internshala.com/internship/detail/unity-developer-internship-in-dehradun-at-ar-genie-inc1776163212",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-05-14T00:00:00",
     "country": "india",
-    "city": "delhi",
+    "city": "dehradun",
     "state": null,
     "is_remote": false,
     "skills": [
-      "APIs",
-      "Flutter",
-      "Node.js"
+      "Augmented Reality (AR)",
+      "C#",
+      "Unity Engine"
     ],
     "degree": [
       "Bachelor's degree in Computer Science or related field"
@@ -476,30 +398,76 @@
       "Computer Science",
       "Software Engineering"
     ],
-    "summary": "We are seeking a talented Flutter Development intern to join our dynamic team at Filmylog. If you have a strong background in Flutter, Node.js, and APIs, this is the perfect opportunity for you to gai",
+    "summary": "We are looking for a passionate 'Unity Developer Intern' to join our team at AR Genie Inc. As a 'Unity Developer Intern,' you will have the opportunity to work on cutting-edge projects in the augmente",
     "responsibilities": [
-      "We are seeking a talented Flutter Development intern to join our dynamic team at Filmylog. If you have a strong background in Flutter, Node.js, and APIs, this is the perfect opportunity for you to gain hands-on experience in a fast-paced environment.",
+      "We are looking for a passionate 'Unity Developer Intern' to join our team at AR Genie Inc. As a 'Unity Developer Intern,' you will have the opportunity to work on cutting-edge projects in the augmented reality space.",
       "Selected intern's day-to-day responsibilities include:",
-      "1. Collaborate with our development team to design and implement new features for our Filmylog app using Flutter.",
-      "2. Work closely with the backend team to integrate APIs and ensure seamless functionality.",
-      "3. Participate in code reviews and provide valuable feedback to improve overall code quality.",
-      "4. Troubleshoot and debug issues to maintain a smooth user experience.",
-      "5. Stay updated on the latest trends and technologies in mobile app development.",
-      "6. Assist in testing and deploying new features to production.",
-      "7. Contribute innovative ideas to enhance the overall user experience of our app.",
-      "If you are passionate about mobile app development and eager to learn from industry experts, apply now to kickstart your career with Filmylog!"
+      "1. Collaborating with the development team to create immersive AR experiences using Unity 3D.",
+      "2. Work on AR Foundation in Unity",
+      "3. Implementing interactive features and functionality within Unity Engine.",
+      "4. Optimizing AR applications for performance across various AR devices like various AR Glass and iPad.",
+      "5. Testing and debugging applications to ensure a smooth user experience.",
+      "6. Staying up-to-date with the latest Unity technologies and trends.",
+      "7. Assisting in the design and implementation of AR features.",
+      "8. Contributing ideas and solutions to enhance the overall AR experience.",
+      "If you are a creative problem-solver with a strong understanding of Unity 3D and a passion for AR technology, we want to hear from you! Join us at AR Genie Inc. and help us create magical AR experiences for our users. Apply now and take the first step towards a rewarding career in AR development."
     ],
     "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Flexible work hours",
-      "Informal dress code",
-      "5 days a week"
+      "Certificate"
+    ],
+    "openings": 2,
+    "stipend": {
+      "type": "paid",
+      "amount": 10000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "3 Months",
+    "source": "web_scraping"
+  },
+  {
+    "name": "AI Automation",
+    "company": "TheBoredMonkey",
+    "apply_link": "https://internshala.com/internship/detail/ai-automation-internship-in-mumbai-at-theboredmonkey1777959467",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-04T00:00:00",
+    "country": "india",
+    "city": "mumbai",
+    "state": null,
+    "is_remote": false,
+    "skills": [
+      "ChatGPT",
+      "Claude",
+      "Python",
+      "Sales"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "At TheBoredMonkey, we don't just build connections   we build relationships. By understanding your vision, we bring ideas to life with a creative, practical, and professional approach. Our team delive",
+    "responsibilities": [
+      "At TheBoredMonkey, we don't just build connections   we build relationships. By understanding your vision, we bring ideas to life with a creative, practical, and professional approach. Our team delivers growth-driven solutions that not only meet brand needs but also build lasting trust with audiences. With us, every idea is transformed into something unique, impactful, and growth-focused.",
+      "We are looking for an intern interested in AI who wants to build real tools that help teams save time. You will work on automating daily tasks across sales, research, and operations, and contribute directly to improving efficiency across the organization.",
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Identify and analyze recurring manual tasks across sales, research, and operations",
+      "2. Build and implement AI-driven automation tools to improve efficiency",
+      "3. Automate sales processes, including outreach, reporting, and lead management",
+      "4. Develop research pipelines to speed up competitor analysis and brand strategy work",
+      "5. Create and maintain a centralized reporting system across departments",
+      "6. Monitor tool performance, fix issues, and continuously improve based on feedback",
+      "7. Track and report impact in terms of time saved, adoption, and efficiency gains"
+    ],
+    "perks": [
+      "Letter of recommendation"
     ],
     "openings": 1,
     "stipend": {
       "type": "paid",
-      "amount": 3000,
+      "amount": 8000,
       "currency": "INR",
       "period": "monthly"
     },
@@ -507,20 +475,19 @@
     "source": "web_scraping"
   },
   {
-    "name": ".NET Development",
-    "company": "Assetcues Solutions Private Limited",
-    "apply_link": "https://internshala.com/internship/detail/net-development-internship-in-pune-at-assetcues-solutions-private-limited1777299660",
-    "date_published": "2026-05-05T04:04:20.723709",
-    "deadline_date": "2026-05-27T00:00:00",
+    "name": "Branding/Social Media",
+    "company": "Moledro",
+    "apply_link": "https://internshala.com/internship/detail/branding-social-media-internship-in-delhi-at-moledro1777870618",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-03T00:00:00",
     "country": "india",
-    "city": "pune",
+    "city": "delhi",
     "state": null,
     "is_remote": false,
     "skills": [
-      ".NET",
-      "C#",
-      "Model View Controller(MVC)",
-      "SQL"
+      "Adobe Creative Suite",
+      "Canva",
+      "Video Editing"
     ],
     "degree": [
       "Bachelor's degree in Computer Science or related field"
@@ -529,30 +496,71 @@
       "Computer Science",
       "Software Engineering"
     ],
-    "summary": "Selected intern's day-to-day responsibilities include: 1. Assisting in the development of backend services, APIs, and business logic using C#, .NET Core, and ASP.NET Core 2. Building and supporting RE",
+    "summary": "Brainstorm with the team for new ideas and strategies for effective content Conducting in-depth research on industry-related topics to develop original and innovative content Develop copy on a wide va",
+    "responsibilities": [
+      "Brainstorm with the team for new ideas and strategies for effective content",
+      "Conducting in-depth research on industry-related topics to develop original and innovative content",
+      "Develop copy on a wide variety of topics for multiple platforms (such as the website, blogs, product descriptions and social media)",
+      "Create eye-catching and innovative headlines and captions",
+      "Assisting the marketing team in developing content for advertising campaigns",
+      "Creating compelling headlines, captions and body copy that will capture the attention of the target audience",
+      "Identifying customers' needs and recommending new content to address gaps in the company's current content"
+    ],
+    "perks": [
+      "Certificate",
+      "Informal dress code"
+    ],
+    "openings": 1,
+    "stipend": {
+      "type": "paid",
+      "amount": 10001,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "2 Months",
+    "source": "web_scraping"
+  },
+  {
+    "name": "Full Stack Development",
+    "company": "Byteception Software LLP",
+    "apply_link": "https://internshala.com/internship/detail/work-from-home-full-stack-development-internship-at-byteception-software-llp1777963645",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-04T00:00:00",
+    "country": "india",
+    "city": "work-from-home",
+    "state": null,
+    "is_remote": true,
+    "skills": [
+      "Backend development",
+      "Git",
+      "Linux",
+      "React",
+      "TypeScript"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "Selected intern's day-to-day responsibilities include: 1. Build and ship features across frontend and backend using Next.js, React, and TypeScript 2. Develop and integrate backend logic, APIs, and dat",
     "responsibilities": [
       "Selected intern's day-to-day responsibilities include:",
-      "1. Assisting in the development of backend services, APIs, and business logic using C#, .NET Core, and ASP.NET Core",
-      "2. Building and supporting RESTful APIs, handling request/response flows, validations, and backend integrations",
-      "3. Using AI-powered development tools such as GitHub Copilot, Cursor, Claude Code, Visual Studio, and VS Code to improve coding speed, testing, debugging, and documentation",
-      "4. Writing, refining, and troubleshooting SQL queries, stored procedures, functions, and database logic for SQL Server and PostgreSQL",
-      "5. Supporting the evaluation and integration of LLMs, AI tools, and agentic workflows into real-world software applications",
-      "6. Collaborating with the development team to translate product requirements into scalable backend solutions",
-      "7. Participating in code reviews, Git-based workflows, pull requests, and version control practices",
-      "8. Debugging backend, API, and data-related issues with a strong focus on performance, accuracy, and maintainability",
-      "9. Documenting APIs, technical decisions, AI integrations, and implementation workflows clearly for internal use",
-      "10. Contributing to the development of scalable, high-impact, user-facing applications that combine backend engineering with AI capabilities"
+      "1. Build and ship features across frontend and backend using Next.js, React, and TypeScript",
+      "2. Develop and integrate backend logic, APIs, and data models while working with serverless architectures and deployments",
+      "3. Collaborate with the team using Git and modern development tools, ensuring efficient development and problem-solving"
     ],
     "perks": [
       "Certificate",
       "Letter of recommendation",
       "Flexible work hours",
-      "Informal dress code"
+      "5 days a week"
     ],
-    "openings": 3,
+    "openings": 1,
     "stipend": {
       "type": "paid",
-      "amount": 5000,
+      "amount": 30000,
       "currency": "INR",
       "period": "monthly"
     },
@@ -563,7 +571,7 @@
     "name": "Software Development",
     "company": "VIZON",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-software-development-internship-at-vizon1775608161",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.198038",
     "deadline_date": "2026-05-29T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -616,7 +624,7 @@
     "name": "Game Development",
     "company": "VIZON",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-game-development-internship-at-vizon1775220935",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.198038",
     "deadline_date": "2026-05-24T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -662,7 +670,7 @@
     "name": "3D Designer",
     "company": "VIZON",
     "apply_link": "https://internshala.com/internship/detail/3d-designer-internship-in-dehradun-at-vizon1775102608",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.198038",
     "deadline_date": "2026-05-23T00:00:00",
     "country": "india",
     "city": "dehradun",
@@ -714,7 +722,7 @@
     "name": "Linux Engineer",
     "company": "VIZON",
     "apply_link": "https://internshala.com/internship/detail/linux-engineer-internship-in-dehradun-at-vizon1774931353",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.198038",
     "deadline_date": "2026-05-21T00:00:00",
     "country": "india",
     "city": "dehradun",
@@ -765,10 +773,215 @@
     "source": "web_scraping"
   },
   {
+    "name": "C++ / Systems Programming",
+    "company": "DeepTrace Consulting",
+    "apply_link": "https://internshala.com/internship/detail/work-from-home-c-systems-programming-internship-at-deeptrace-consulting1777961681",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-04T00:00:00",
+    "country": "india",
+    "city": "work-from-home",
+    "state": null,
+    "is_remote": true,
+    "skills": [
+      "C++ Programming",
+      "Debugging",
+      "Generative AI Development",
+      "Python"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "Selected intern's day-to-day responsibilities include: 1. Work on C++ and Python tasks for system-level development and problem-solving 2. Debug issues, analyze logs, and fix bugs in existing codebase",
+    "responsibilities": [
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Work on C++ and Python tasks for system-level development and problem-solving",
+      "2. Debug issues, analyze logs, and fix bugs in existing codebases",
+      "3. Run builds, simulations, and test cases; report results clearly",
+      "4. Write basic automation scripts (bash/python) to improve workflows",
+      "5. Assist in improving performance and reliability of systems",
+      "6. Collaborate on tasks and provide regular progress updates"
+    ],
+    "perks": [
+      "Certificate",
+      "Letter of recommendation",
+      "5 days a week"
+    ],
+    "openings": 2,
+    "stipend": {
+      "type": "paid",
+      "amount": 8000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "6 Months",
+    "source": "web_scraping"
+  },
+  {
+    "name": "Java Development",
+    "company": "Symonis",
+    "apply_link": "https://internshala.com/internship/detail/work-from-home-java-development-internship-at-symonis1777954410",
+    "date_published": "2026-05-05T13:44:50.198038",
+    "deadline_date": "2026-06-04T00:00:00",
+    "country": "india",
+    "city": "work-from-home",
+    "state": null,
+    "is_remote": true,
+    "skills": [
+      "Hibernate ORM(Java)",
+      "J2EE",
+      "Java",
+      "JSP",
+      "MySQL",
+      "Spring MVC"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "Are you a passionate Java developer looking to gain real-world experience in a fast-paced and innovative environment? Symonis is seeking a java development intern to join our dynamic team. Selected in",
+    "responsibilities": [
+      "Are you a passionate Java developer looking to gain real-world experience in a fast-paced and innovative environment? Symonis is seeking a java development intern to join our dynamic team.",
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Collaborate with senior developers to design, develop, and test Java applications",
+      "2. Utilize MySQL to create and maintain databases for seamless data management",
+      "3. Implement JSP and J2EE technologies to enhance user interface and functionality",
+      "4. Utilize Hibernate ORM to map Java objects to database tables for efficient data retrieval",
+      "5. Implement Spring MVC framework to build robust web applications",
+      "6. Troubleshoot and debug Java applications to ensure optimal performance",
+      "7. Stay updated on the latest Java trends and technologies to contribute fresh ideas to the team.",
+      "If you have a solid understanding of Java, MySQL, JSP, J2EE, Hibernate ORM, and Spring MVC, and a desire to learn and grow as a developer, then we want to hear from you! Don't miss this opportunity to kickstart your career with Symonis. Apply now!"
+    ],
+    "perks": [
+      "Certificate",
+      "Letter of recommendation",
+      "Flexible work hours",
+      "5 days a week"
+    ],
+    "openings": 3,
+    "stipend": {
+      "type": "paid",
+      "amount": 10000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "3 Months",
+    "source": "web_scraping"
+  },
+  {
+    "name": "Applied AI Engineer",
+    "company": "Aegis Health (San Francisco, United States)",
+    "apply_link": "https://internshala.com/internship/detail/work-from-home-applied-ai-engineer-internship-at-aegis-health1777953358",
+    "date_published": "2026-05-05T13:44:50.199109",
+    "deadline_date": "2026-06-04T00:00:00",
+    "country": "india",
+    "city": "work-from-home",
+    "state": null,
+    "is_remote": true,
+    "skills": [
+      "Amazon S3",
+      "Artificial intelligence",
+      "LLM evaluation",
+      "LLMOps",
+      "Node.js",
+      "TypeScript"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "Selected intern's day-to-day responsibilities include: 1. Build and improve AI agents for denial management, automating denial appeals, re-corrections, and resubmissions across RCM workflows 2. Ship p",
+    "responsibilities": [
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Build and improve AI agents for denial management, automating denial appeals, re-corrections, and resubmissions across RCM workflows",
+      "2. Ship product features across the stack, enhancing workflows for speed, accuracy, and reliability",
+      "3. Translate customer feedback into product improvements by addressing edge cases and optimizing agent performance",
+      "4. Deploy, train, evaluate, and fine-tune AI models in production to improve accuracy, scalability, and real-world performance"
+    ],
+    "perks": [
+      "Certificate",
+      "Letter of recommendation",
+      "Flexible work hours"
+    ],
+    "openings": 1,
+    "stipend": {
+      "type": "paid",
+      "amount": 1000,
+      "currency": "USD",
+      "period": "monthly"
+    },
+    "duration_string": "3 Months",
+    "source": "web_scraping"
+  },
+  {
+    "name": "Python Development",
+    "company": "Symonis",
+    "apply_link": "https://internshala.com/internship/detail/work-from-home-python-development-internship-at-symonis1777951520",
+    "date_published": "2026-05-05T13:44:50.199109",
+    "deadline_date": "2026-06-04T00:00:00",
+    "country": "india",
+    "city": "work-from-home",
+    "state": null,
+    "is_remote": true,
+    "skills": [
+      "CSS",
+      "Django",
+      "Flask",
+      "HTML",
+      "Machine Learning",
+      "Python",
+      "REST API"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "Are you a dynamic and passionate Python developer looking to gain hands-on experience in a cutting-edge tech company? Join Symonis as a Python Development intern and take your skills to the next level",
+    "responsibilities": [
+      "Are you a dynamic and passionate Python developer looking to gain hands-on experience in a cutting-edge tech company? Join Symonis as a Python Development intern and take your skills to the next level!",
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Collaborate with the development team on Python projects, including web development using Django and Flask frameworks.",
+      "2. Assist in building and maintaining RESTful APIs for seamless communication between frontend and backend systems.",
+      "3. Implement machine learning algorithms to enhance product functionality and user experience.",
+      "4. Utilize HTML and CSS to create visually appealing and user-friendly interfaces for web applications.",
+      "5. Participate in code reviews, testing, and debugging to ensure high-quality, efficient code.",
+      "6. Stay current on industry trends and best practices in Python development to contribute innovative ideas to projects.",
+      "7. Work closely with senior developers to gain valuable mentorship and guidance throughout the internship.",
+      "Don't miss this opportunity to expand your skill set and make a real impact at Symonis! Apply now to kickstart your career in Python development."
+    ],
+    "perks": [
+      "Certificate",
+      "Letter of recommendation",
+      "Flexible work hours",
+      "5 days a week"
+    ],
+    "openings": 4,
+    "stipend": {
+      "type": "paid",
+      "amount": 10000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "3 Months",
+    "source": "web_scraping"
+  },
+  {
     "name": "Full Stack Development",
     "company": "Zarle Infotech",
     "apply_link": "https://internshala.com/internship/detail/full-stack-development-internship-in-noida-at-zarle-infotech1777892682",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-03T00:00:00",
     "country": "india",
     "city": "noida",
@@ -822,10 +1035,53 @@
     "source": "web_scraping"
   },
   {
+    "name": "Game 3D Asset Development",
+    "company": "Jugaad Interactives",
+    "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-game-3d-asset-development-internship-at-jugaad-interactives1777882713",
+    "date_published": "2026-05-05T13:44:50.199109",
+    "deadline_date": "2026-06-03T00:00:00",
+    "country": "india",
+    "city": "work-from-home",
+    "state": null,
+    "is_remote": true,
+    "skills": [
+      "Blender 3D",
+      "Canva",
+      "Substance Painter"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "Selected intern's day-to-day responsibilities include: 1. Create 3D game assets as per the requirements following agile methodology 2. Update the team on development progress during bi-weekly meetings",
+    "responsibilities": [
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Create 3D game assets as per the requirements following agile methodology",
+      "2. Update the team on development progress during bi-weekly meetings (Tuesday & Friday, 11 PM to 12:30 AM) on the Discord server",
+      "3. Continuously improve and refine assets based on feedback and project needs"
+    ],
+    "perks": [
+      "Certificate",
+      "Flexible work hours"
+    ],
+    "openings": 1,
+    "stipend": {
+      "type": "paid",
+      "amount": 5000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "6 Months",
+    "source": "web_scraping"
+  },
+  {
     "name": "Python Development",
     "company": "Cloud Back",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-python-development-internship-at-cloud-back1777875246",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-03T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -880,7 +1136,7 @@
     "name": "Java Development",
     "company": "Cloud Back",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-java-development-internship-at-cloud-back1777874812",
-    "date_published": "2026-05-05T04:04:20.723709",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-03T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -931,10 +1187,62 @@
     "source": "web_scraping"
   },
   {
+    "name": "Flutter Development",
+    "company": "Filmylog",
+    "apply_link": "https://internshala.com/internship/detail/flutter-development-internship-in-delhi-at-filmylog1777874142",
+    "date_published": "2026-05-05T13:44:50.199109",
+    "deadline_date": "2026-06-03T00:00:00",
+    "country": "india",
+    "city": "delhi",
+    "state": null,
+    "is_remote": false,
+    "skills": [
+      "APIs",
+      "Flutter",
+      "Node.js"
+    ],
+    "degree": [
+      "Bachelor's degree in Computer Science or related field"
+    ],
+    "field": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "summary": "We are seeking a talented Flutter Development intern to join our dynamic team at Filmylog. If you have a strong background in Flutter, Node.js, and APIs, this is the perfect opportunity for you to gai",
+    "responsibilities": [
+      "We are seeking a talented Flutter Development intern to join our dynamic team at Filmylog. If you have a strong background in Flutter, Node.js, and APIs, this is the perfect opportunity for you to gain hands-on experience in a fast-paced environment.",
+      "Selected intern's day-to-day responsibilities include:",
+      "1. Collaborate with our development team to design and implement new features for our Filmylog app using Flutter.",
+      "2. Work closely with the backend team to integrate APIs and ensure seamless functionality.",
+      "3. Participate in code reviews and provide valuable feedback to improve overall code quality.",
+      "4. Troubleshoot and debug issues to maintain a smooth user experience.",
+      "5. Stay updated on the latest trends and technologies in mobile app development.",
+      "6. Assist in testing and deploying new features to production.",
+      "7. Contribute innovative ideas to enhance the overall user experience of our app.",
+      "If you are passionate about mobile app development and eager to learn from industry experts, apply now to kickstart your career with Filmylog!"
+    ],
+    "perks": [
+      "Certificate",
+      "Letter of recommendation",
+      "Flexible work hours",
+      "Informal dress code",
+      "5 days a week"
+    ],
+    "openings": 1,
+    "stipend": {
+      "type": "paid",
+      "amount": 3000,
+      "currency": "INR",
+      "period": "monthly"
+    },
+    "duration_string": "6 Months",
+    "source": "web_scraping"
+  },
+  {
     "name": "Blockchain Development",
     "company": "Global Trend",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-blockchain-development-internship-at-global-trend1777832908",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-02T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -983,119 +1291,10 @@
     "source": "web_scraping"
   },
   {
-    "name": "Java Development",
-    "company": "Symonis",
-    "apply_link": "https://internshala.com/internship/detail/work-from-home-java-development-internship-at-symonis1777781701",
-    "date_published": "2026-05-05T04:04:20.724765",
-    "deadline_date": "2026-06-02T00:00:00",
-    "country": "india",
-    "city": "work-from-home",
-    "state": null,
-    "is_remote": true,
-    "skills": [
-      "Hibernate ORM(Java)",
-      "J2EE",
-      "Java",
-      "JSP",
-      "MySQL",
-      "Spring MVC"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Are you a passionate Java developer looking to gain real-world experience in a fast-paced and innovative environment? Symonis is seeking a java development intern to join our dynamic team. Selected in",
-    "responsibilities": [
-      "Are you a passionate Java developer looking to gain real-world experience in a fast-paced and innovative environment? Symonis is seeking a java development intern to join our dynamic team.",
-      "Selected intern's day-to-day responsibilities include:",
-      "1. Collaborate with senior developers to design, develop, and test Java applications",
-      "2. Utilize MySQL to create and maintain databases for seamless data management",
-      "3. Implement JSP and J2EE technologies to enhance user interface and functionality",
-      "4. Utilize Hibernate ORM to map Java objects to database tables for efficient data retrieval",
-      "5. Implement Spring MVC framework to build robust web applications",
-      "6. Troubleshoot and debug Java applications to ensure optimal performance",
-      "7. Stay updated on the latest Java trends and technologies to contribute fresh ideas to the team.",
-      "If you have a solid understanding of Java, MySQL, JSP, J2EE, Hibernate ORM, and Spring MVC, and a desire to learn and grow as a developer, then we want to hear from you! Don't miss this opportunity to kickstart your career with Symonis. Apply now!"
-    ],
-    "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Flexible work hours",
-      "5 days a week"
-    ],
-    "openings": 3,
-    "stipend": {
-      "type": "paid",
-      "amount": 10000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "3 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "Python Development",
-    "company": "Symonis",
-    "apply_link": "https://internshala.com/internship/detail/work-from-home-python-development-internship-at-symonis1777781469",
-    "date_published": "2026-05-05T04:04:20.724765",
-    "deadline_date": "2026-06-02T00:00:00",
-    "country": "india",
-    "city": "work-from-home",
-    "state": null,
-    "is_remote": true,
-    "skills": [
-      "CSS",
-      "Django",
-      "Flask",
-      "HTML",
-      "Machine Learning",
-      "Python",
-      "REST API"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Are you a dynamic and passionate Python developer looking to gain hands-on experience in a cutting-edge tech company? Join Symonis as a Python Development intern and take your skills to the next level",
-    "responsibilities": [
-      "Are you a dynamic and passionate Python developer looking to gain hands-on experience in a cutting-edge tech company? Join Symonis as a Python Development intern and take your skills to the next level!",
-      "Selected intern's day-to-day responsibilities include:",
-      "1. Collaborate with the development team on Python projects, including web development using Django and Flask frameworks.",
-      "2. Assist in building and maintaining RESTful APIs for seamless communication between frontend and backend systems.",
-      "3. Implement machine learning algorithms to enhance product functionality and user experience.",
-      "4. Utilize HTML and CSS to create visually appealing and user-friendly interfaces for web applications.",
-      "5. Participate in code reviews, testing, and debugging to ensure high-quality, efficient code.",
-      "6. Stay current on industry trends and best practices in Python development to contribute innovative ideas to projects.",
-      "7. Work closely with senior developers to gain valuable mentorship and guidance throughout the internship.",
-      "Don't miss this opportunity to expand your skill set and make a real impact at Symonis! Apply now to kickstart your career in Python development."
-    ],
-    "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Flexible work hours",
-      "5 days a week"
-    ],
-    "openings": 4,
-    "stipend": {
-      "type": "paid",
-      "amount": 10000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "3 Months",
-    "source": "web_scraping"
-  },
-  {
     "name": "Software Development Engineering (Web)",
     "company": "RCS Projects Pvt Ltd",
     "apply_link": "https://internshala.com/internship/detail/software-development-engineering-web-internship-in-multiple-locations-at-rcs-projects-pvt-ltd1777769914",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-03T00:00:00",
     "country": "india",
     "city": "gurgaon,-bangalore",
@@ -1159,7 +1358,7 @@
     "name": "NodeJs, Rust Developer",
     "company": "Qualyval",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-nodejs-rust-developer-internship-at-qualyval1777714472",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-01T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1203,7 +1402,7 @@
     "name": "Python Developer",
     "company": "Maxgen Technologies Private Limited",
     "apply_link": "https://internshala.com/internship/detail/python-developer-internship-in-ahmedabad-at-maxgen-technologies-private-limited1777651434",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "ahmedabad",
@@ -1253,7 +1452,7 @@
     "name": "Python Development",
     "company": "SleekCare Private Limited",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-python-development-internship-at-sleekcare-private-limited1777636834",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1315,7 +1514,7 @@
     "name": "Software (Frappe/Full-Stack Development)",
     "company": "Technoculture Research",
     "apply_link": "https://internshala.com/internship/detail/software-frappe-full-stack-development-internship-in-bangalore-at-technoculture-research1777635285",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "bangalore",
@@ -1367,7 +1566,7 @@
     "name": "Backend Development",
     "company": "Primetrade.ai",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-backend-development-internship-at-primetradeai1777617429",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1415,7 +1614,7 @@
     "name": "Python Development",
     "company": "Primetrade.ai",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-python-development-internship-at-primetradeai1777617320",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1458,7 +1657,7 @@
     "name": "Computer Science (Foundations)",
     "company": "Primetrade.ai",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-computer-science-foundations-internship-at-primetradeai1777617003",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1508,7 +1707,7 @@
     "name": "Flutter Development",
     "company": "Connectezy",
     "apply_link": "https://internshala.com/internship/detail/flutter-development-internship-in-chennai-at-connectezy1777616707",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "chennai",
@@ -1564,7 +1763,7 @@
     "name": "AWS DevOps Engineer",
     "company": "Sankar Group",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-aws-devops-engineer-internship-at-sankar-group1777614237",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1622,7 +1821,7 @@
     "name": "Stock Trading Research",
     "company": "Certiwisehub",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-stock-trading-research-internship-at-certiwisehub1777610289",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1671,7 +1870,7 @@
     "name": "Developer",
     "company": "JP IT STAFFING LLC",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-developer-internship-at-jp-it-staffing-llc1777608494",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-21T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1719,7 +1918,7 @@
     "name": "PHP Development",
     "company": "International Institute Of SDGs & Public Policy Research",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-php-development-internship-at-international-institute-of-sdgs-public-policy-research1777608252",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-31T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1768,7 +1967,7 @@
     "name": "Python Development",
     "company": "Sankar Group",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-python-development-internship-at-sankar-group1777573742",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1826,7 +2025,7 @@
     "name": "Backend Development",
     "company": "International Institute Of SDGs & Public Policy Research",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-backend-development-internship-at-international-institute-of-sdgs-public-policy-research1777553850",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1879,7 +2078,7 @@
     "name": "Flutter Development",
     "company": "Meru Technosoft Private Limited",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-flutter-development-internship-at-meru-technosoft-private-limited1777547748",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1934,7 +2133,7 @@
     "name": "3D Game Asset Artist",
     "company": "DigiMandir",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-3d-game-asset-artist-internship-at-sachin-kumar1777533554",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-06-09T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -1995,7 +2194,7 @@
     "name": "Quantitative Developer",
     "company": "Finflock Systems Private Limited",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-quantitative-developer-internship-at-finflock-systems-private-limited1777530232",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -2040,7 +2239,7 @@
     "name": "Game Design & Content",
     "company": "Quirky Hai",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-game-design-content-internship-at-quirky-hai1777529584",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -2090,7 +2289,7 @@
     "name": "Java Development",
     "company": "CloudZapier",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-java-development-internship-at-cloudzapier1777525358",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -2144,7 +2343,7 @@
     "name": "Python Development",
     "company": "CloudZapier",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-python-development-internship-at-cloudzapier1777525320",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -2199,7 +2398,7 @@
     "name": "Python Automation",
     "company": "Jarurat Care",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-part-time-python-automation-internship-at-jarurat-care1777522198",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-30T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -2260,7 +2459,7 @@
     "name": "Backend Development",
     "company": "Plutonic Services Private Limited",
     "apply_link": "https://internshala.com/internship/detail/backend-development-internship-in-noida-at-plutonic-services-private-limited1777469463",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-29T00:00:00",
     "country": "india",
     "city": "noida",
@@ -2318,7 +2517,7 @@
     "name": "Software Development",
     "company": "Vedaz",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-software-development-internship-at-vedaz1777469463",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-29T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -2364,7 +2563,7 @@
     "name": "Software Development Engineering (Web)",
     "company": "GR Infotech - Delivering Excellence",
     "apply_link": "https://internshala.com/internship/detail/software-development-engineering-web-internship-in-chennai-at-gr-infotech-delivering-excellence1777447449",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-29T00:00:00",
     "country": "india",
     "city": "chennai",
@@ -2415,7 +2614,7 @@
     "name": "AI Image Gen Artist",
     "company": "SAS Group",
     "apply_link": "https://internshala.com/internship/detail/work-from-home-ai-image-gen-artist-internship-at-sas-group1777443773",
-    "date_published": "2026-05-05T04:04:20.724765",
+    "date_published": "2026-05-05T13:44:50.199109",
     "deadline_date": "2026-05-29T00:00:00",
     "country": "india",
     "city": "work-from-home",
@@ -2452,262 +2651,6 @@
     "stipend": {
       "type": "paid",
       "amount": 12000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "SWE - React Native",
-    "company": "Psync",
-    "apply_link": "https://internshala.com/internship/detail/work-from-home-swe-react-native-internship-at-psync1777442158",
-    "date_published": "2026-05-05T04:04:20.724765",
-    "deadline_date": "2026-05-29T00:00:00",
-    "country": "india",
-    "city": "work-from-home",
-    "state": null,
-    "is_remote": true,
-    "skills": [
-      "Backend development",
-      "GraphQL",
-      "HTML",
-      "React",
-      "React Native",
-      "REST API"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Selected intern's day-to-day responsibilities include: 1. Working on exciting cutting-edge UI/UX design and development in React Native and HTML 2. Proactively squashing bugs to contribute to our busi",
-    "responsibilities": [
-      "Selected intern's day-to-day responsibilities include:",
-      "1. Working on exciting cutting-edge UI/UX design and development in React Native and HTML",
-      "2. Proactively squashing bugs to contribute to our business",
-      "3. Attending weekly status meetings to report progress and learn",
-      "4. Handling state management in Jotai, Zustand, useState, useEffect",
-      "5. Identifying performance bottlenecks and contributing to building a 'snappy' app",
-      "6. Demonstrating backend proficiency in Python for API building (e.g., Flask, FastAPI preferred)"
-    ],
-    "perks": [
-      "Letter of recommendation",
-      "Flexible work hours"
-    ],
-    "openings": 1,
-    "stipend": {
-      "type": "paid",
-      "amount": 1000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "Computer Vision And Image Processing",
-    "company": "Edith Defence Systems Private Limited",
-    "apply_link": "https://internshala.com/internship/detail/computer-vision-and-image-processing-internship-in-navi-mumbai-at-edith-defence-systems-private-limited1777395711",
-    "date_published": "2026-05-05T04:04:20.724765",
-    "deadline_date": "2026-06-01T00:00:00",
-    "country": "india",
-    "city": "navi-mumbai",
-    "state": null,
-    "is_remote": false,
-    "skills": [
-      "C++ Programming",
-      "Computer Vision",
-      "C Programming",
-      "Deep Learning",
-      "Git",
-      "Linux",
-      "OpenCV",
-      "Python",
-      "Shell Scripting"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Selected intern's day-to-day responsibilities include: 1. Design and implement robust classical image processing techniques such as filtering, thresholding, morphological operations, and edge detectio",
-    "responsibilities": [
-      "Selected intern's day-to-day responsibilities include:",
-      "1. Design and implement robust classical image processing techniques such as filtering, thresholding, morphological operations, and edge detection, with a strong focus on mathematical and algorithmic understanding.",
-      "2. Develop computer vision modules using OpenCV (C++/Python) for tasks including geometric transformations, feature extraction, contour analysis, and tracking, beyond simple model-based detection.",
-      "3. Work with real-world image and video datasets, performing hands-on tasks such as raw data handling, frame-wise preprocessing, noise reduction, and ROI selection     not limited to ready-made AI datasets.",
-      "4. Apply knowledge of camera geometry, epipolar constraints, and 2D/3D transformations to solve vision problems like rectification, projection, stitching, and visual alignment.",
-      "5. Implement multiview geometry concepts such as homography estimation, camera calibration, stereo vision, and structure-from-motion, with an emphasis on coding from first principles when needed.",
-      "6. Design and maintain real-time video pipelines using GStreamer or similar frameworks, handling encoding/decoding, latency control, and stream synchronization.",
-      "7. Optimize vision algorithms for real-time performance on embedded or resource-constrained platforms (e.g., Raspberry Pi, Jetson Nano), including profiling and memory optimization.",
-      "8. Collaborate with hardware and embedded systems teams to integrate vision code with peripheral devices like cameras, sensors, and processing units.",
-      "9. Write modular, well-documented, and efficient code in C++, C, or Python, with clear separation between algorithmic logic and system interfaces.",
-      "10. Evaluate, benchmark, and compare multiple vision approaches based on accuracy, speed, robustness, and resource usage, using quantitative metrics, not just visual inspection.",
-      "11. Work with image and video datasets - cleaning, labeling, augmentation, and preprocessing - and build pipelines for tasks such as object detection, segmentation, feature extraction, and tracking using PyTorch, TensorFlow, and other deep learning frameworks.",
-      "12.   Apply quantization, pruning, and knowledge distillation to improve model efficiency.",
-      "13. Implement techniques like Grad-CAM, LIME, and SHAP to explain model predictions.",
-      "14. Use Git for structured version control, including branching strategies, commit hygiene, and team-based collaboration on codebases.",
-      "15. Contribute to system-level integration of vision modules, ensuring compatibility with video input/output systems, UI components, and network interfaces.",
-      "16. Stay current with academic and industrial advances in classical vision and real-time processing, while maintaining a critical view of deep learning as one of many tools rather than the only approach."
-    ],
-    "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Informal dress code",
-      "Free snacks & beverages",
-      "Job offer"
-    ],
-    "openings": 2,
-    "stipend": {
-      "type": "paid",
-      "amount": 12000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "AI Builder",
-    "company": "Zapper Edge LLP",
-    "apply_link": "https://internshala.com/internship/detail/ai-builder-internship-in-bangalore-at-zapper-edge-llp1777396779",
-    "date_published": "2026-05-05T04:04:20.724765",
-    "deadline_date": "2026-05-28T00:00:00",
-    "country": "india",
-    "city": "bangalore",
-    "state": null,
-    "is_remote": false,
-    "skills": [
-      "Generative AI Tools",
-      "Test Automation",
-      "Vibe Coding"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Selected intern's day-to-day responsibilities include: A. AI and development: 1. Use AI tools such as LLMs, SLMs, and Copilot to build and ship features across web, mobile, and backend. 2. Learn and a",
-    "responsibilities": [
-      "Selected intern's day-to-day responsibilities include:",
-      "A. AI and development:",
-      "1. Use AI tools such as LLMs, SLMs, and Copilot to build and ship features across web, mobile, and backend.",
-      "2. Learn and apply machine learning basics to real product problems.",
-      "3. Stay updated with emerging AI tools and contribute new ideas to the team.",
-      "B. Cross-functional execution:",
-      "1. Work across development, testing, app development, and web development based on project needs.",
-      "2. Write and execute test cases, perform QA, and report bugs clearly.",
-      "3. Contribute to web and app projects from ideation to deployment.",
-      "C. Communication and presentation:",
-      "1. Present work, demos, and updates confidently to the team and stakeholders.",
-      "2. Communicate blockers, progress, and learnings clearly in English, both written and spoken.",
-      "3. Participate in team standups, reviews, and brainstorming sessions.",
-      "D. Attitude and growth:",
-      "1. Adapt quickly to changing priorities and roles.",
-      "2. Focus on speed of learning and delivery over perfection.",
-      "3. Take ownership and apply a problem-solving mindset.",
-      "Requirements:",
-      "1. Curiosity about AI, LLMs, and evolving technology.",
-      "2. Confident communication skills with good spoken English.",
-      "3. Strong willingness to learn, adapt, and take initiative."
-    ],
-    "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Flexible work hours",
-      "Informal dress code",
-      "5 days a week"
-    ],
-    "openings": 4,
-    "stipend": {
-      "type": "paid",
-      "amount": 15000,
-      "currency": "INR",
-      "period": "monthly"
-    },
-    "duration_string": "6 Months",
-    "source": "web_scraping"
-  },
-  {
-    "name": "Software Developer Intern (Backend)",
-    "company": "HiWi Forex Services Limited",
-    "apply_link": "https://internshala.com/internship/detail/software-developer-intern-backend-internship-in-mumbai-at-hiwi-forex-services-limited1777384438",
-    "date_published": "2026-05-05T04:04:20.724765",
-    "deadline_date": "2026-05-28T00:00:00",
-    "country": "india",
-    "city": "mumbai",
-    "state": null,
-    "is_remote": false,
-    "skills": [
-      "Cursor (GenAI)",
-      "Java",
-      "PostgreSQL",
-      "Problem Solving",
-      "Python",
-      "Spring Boot"
-    ],
-    "degree": [
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    "field": [
-      "Computer Science",
-      "Software Engineering"
-    ],
-    "summary": "Job Title: Software Developer Intern (Backend) Location: Prabhadevi West (5mins walking from the station) - Work from Office Duration: 6 Months Working time: 10AM - 7PM Working days: Monday to Friday ",
-    "responsibilities": [
-      "Job Title: Software Developer Intern (Backend)",
-      "Location: Prabhadevi West (5mins walking from the station) - Work from Office",
-      "Duration: 6 Months",
-      "Working time: 10AM - 7PM",
-      "Working days: Monday to Friday (Odd Saturdays full day working and even Saturdays holiday)",
-      "About the Role",
-      "We are looking for a passionate Backend Developer Intern who is eager to learn and contribute to building scalable and efficient server-side applications. This role is ideal for someone who wants hands-on experience in backend development, APIs, and database management.",
-      "Key Responsibilities",
-      "1. Assist in developing and maintaining backend services and APIs",
-      "2. Write clean, efficient, and scalable code",
-      "3. Work with databases to design, optimize, and manage data",
-      "4. Collaborate with frontend developers to integrate user-facing elements",
-      "5. Debug and troubleshoot application issues",
-      "6. Participate in code reviews and brain storming coming up with new innovative ideas",
-      "7. Learn and implement best practices in backend development",
-      "What you'll work on:",
-      "- Build AI-powered features that generate, optimize, and automate digital content at scale",
-      "- Work hands-on with LLMs, prompt engineering, and real-world AI workflows     not just demos",
-      "- Design and develop end-to-end systems (APIs, integrations, and automation pipelines) used in production",
-      "- Experiment with agentic AI systems to solve practical problems in content creation and distribution",
-      "Required Skills",
-      "a. Basic knowledge of backend programming languages such as Java, Python, Node.js, or PHP",
-      "b. Understanding of REST APIs and web services",
-      "c. Familiarity with databases like MySQL, PostgreSQL, or MongoDB",
-      "d. Basic understanding of data structures and algorithms",
-      "e. Good problem-solving and analytical skills",
-      "Preferred Qualifications",
-      "- Pursuing or recently completed a degree in Computer Science, IT, or Electronics",
-      "- Exposure to frameworks like Spring Boot, Django, Express.js, or Flask",
-      "- Understanding of cloud platforms (AWS, GCP, or Azure) is a plus",
-      "Who Should Apply",
-      "i Students in their final year or recent graduates (2025 / 2026 pass-outs)",
-      "ii Candidates looking to build a career in backend development",
-      "iii Individuals with a strong willingness to learn and grow",
-      "*** This is a 6-month internship program, and based on performance, candidates may be offered a full-time Backend Developer role with the company.",
-      "You can share your resume on reena.jadhav@hiwipay.com"
-    ],
-    "perks": [
-      "Certificate",
-      "Letter of recommendation",
-      "Informal dress code"
-    ],
-    "openings": 1,
-    "stipend": {
-      "type": "paid",
-      "amount": 20000,
       "currency": "INR",
       "period": "monthly"
     },

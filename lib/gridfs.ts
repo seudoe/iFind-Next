@@ -70,8 +70,60 @@ export async function uploadResumeToGridFS(
 
 export async function deleteResumeFromGridFS(userId: string): Promise<void> {
   const bucket = getResumeBucket();
-  const files = await bucket.find({ "metadata.userId": userId }).toArray();
+  // Only delete the live (non-pending) file
+  const files = await bucket
+    .find({ "metadata.userId": userId, "metadata.pending": { $ne: true } })
+    .toArray();
   await Promise.all(files.map((f) => bucket.delete(f._id)));
+}
+
+/**
+ * Delete a single GridFS file by its fileId string.
+ * Safe to call even if the file doesn't exist.
+ */
+export async function deleteResumeFileById(fileId: string): Promise<void> {
+  try {
+    const bucket = getResumeBucket();
+    await bucket.delete(toObjectId(fileId));
+  } catch {
+    // File already gone — ignore
+  }
+}
+
+/**
+ * Upload a PDF buffer to GridFS as a PENDING file (does not touch the live resume).
+ * Tagged with metadata.pending = true so it can be found and cleaned up separately.
+ */
+export async function uploadPendingResumeToGridFS(
+  buffer: Buffer,
+  fileName: string,
+  userId: string
+): Promise<UploadResult> {
+  const bucket = getResumeBucket();
+
+  // Clean up any previous pending file for this user first
+  const existing = await bucket
+    .find({ "metadata.userId": userId, "metadata.pending": true })
+    .toArray();
+  await Promise.all(existing.map((f) => bucket.delete(f._id)));
+
+  const fileId = new mongoose.mongo.ObjectId();
+  const stream = bucket.openUploadStreamWithId(fileId, fileName, {
+    metadata: { userId, uploadedAt: new Date(), contentType: "application/pdf", pending: true },
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    Readable.from(buffer).pipe(stream)
+      .on("finish", resolve)
+      .on("error", reject);
+  });
+
+  const id = fileId.toString();
+  return {
+    fileId: id,
+    viewLink: `/api/user/resume/view/${id}`,
+    downloadLink: `/api/user/resume/download/${id}`,
+  };
 }
 
 export function streamResumeFromGridFS(fileId: string): NodeJS.ReadableStream {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, CheckCircle, AlertCircle, TrendingUp, Bookmark, Send, ChevronRight, X } from "lucide-react";
+import { Sparkles, CheckCircle, AlertCircle, TrendingUp, Bookmark, Send, ChevronRight, X, RefreshCw } from "lucide-react";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { InternshipCard } from "@/components/internships/InternshipCard";
 import { InternshipDetail } from "@/components/internships/InternshipDetail";
@@ -8,7 +8,8 @@ import { InternshipCardSkeleton } from "@/components/ui/Skeleton";
 import { Badge } from "@/components/ui/Badge";
 import { getStatusColor } from "@/lib/utils";
 import type { User, Internship } from "@/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "sonner";
 
 interface OverviewTabProps {
   user: User;
@@ -26,23 +27,24 @@ const COMPLETION_CHECKLIST = [
 export function OverviewTab({ user }: OverviewTabProps) {
   const [recommended, setRecommended]       = useState<Internship[]>([]);
   const [recLoading, setRecLoading]         = useState(true);
+  const [recRefreshing, setRecRefreshing]   = useState(false);
   const [showAllRec, setShowAllRec]         = useState(false);
   const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
   const [appliedDetails, setAppliedDetails] = useState<Map<string, Internship>>(new Map());
+  // Local copy of recommended IDs so we can update after HRS without a full page reload
+  const [recIds, setRecIds]                 = useState<string[]>(user.recommendedInternships ?? []);
+  const [recScores, setRecScores]           = useState<{ id: string; score: number }[]>(user.recommendedScores ?? []);
 
-  // scoreMap for rendering the % badge — built from user.recommendedScores
+  // scoreMap for rendering the % badge
   const scoreMap = new Map<string, number>(
-    (user.recommendedScores ?? []).map(({ id, score }) => [String(id), score])
+    recScores.map(({ id, score }) => [String(id), score])
   );
 
-  useEffect(() => {
-    const ids = user.recommendedInternships;
-    if (!ids || ids.length === 0) { setRecLoading(false); return; }
+  // ── Fetch internship cards for a given set of IDs ────────────────────────
+  const fetchRecommendedCards = useCallback((ids: string[], scores: { id: string; score: number }[]) => {
+    if (!ids || ids.length === 0) { setRecommended([]); setRecLoading(false); return; }
 
-    // Build the score map inside the effect so it's always fresh
-    const scores = new Map<string, number>(
-      (user.recommendedScores ?? []).map(({ id, score }) => [String(id), score])
-    );
+    const scoreIndex = new Map<string, number>(scores.map(({ id, score }) => [String(id), score]));
 
     fetch("/api/internships/by-ids", {
       method: "POST",
@@ -54,8 +56,8 @@ export function OverviewTab({ user }: OverviewTabProps) {
       .then((j) => {
         if (j.success) {
           const sorted = (j.data as Internship[]).sort((a, b) => {
-            const sa = scores.get(String(a._id)) ?? 0;
-            const sb = scores.get(String(b._id)) ?? 0;
+            const sa = scoreIndex.get(String(a._id)) ?? 0;
+            const sb = scoreIndex.get(String(b._id)) ?? 0;
             return sb - sa;
           });
           setRecommended(sorted);
@@ -63,7 +65,60 @@ export function OverviewTab({ user }: OverviewTabProps) {
       })
       .catch(() => {})
       .finally(() => setRecLoading(false));
-  }, [user.recommendedInternships, user.recommendedScores]);
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    fetchRecommendedCards(recIds, recScores);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // only on mount — manual refresh handled by handleRefreshHRS
+
+  // ── Run HRS: vectorize resume → score all internships → reload cards ─────
+  const handleRefreshHRS = async () => {
+    if (!user.resume?.parsedData) {
+      toast.error("Upload and extract your resume first before running recommendations.");
+      return;
+    }
+
+    setRecRefreshing(true);
+    setRecLoading(true);
+
+    try {
+      const res  = await fetch("/api/user/resume/vectorize", {
+        method: "POST",
+        credentials: "include",
+      });
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? "HRS failed");
+      }
+
+      // Fetch the updated user doc to get fresh IDs + scores
+      const meRes  = await fetch("/api/auth/me", { credentials: "include" });
+      const meJson = await meRes.json();
+
+      if (meJson.success && meJson.user) {
+        const freshIds    = meJson.user.recommendedInternships ?? [];
+        const freshScores = meJson.user.recommendedScores      ?? [];
+        setRecIds(freshIds);
+        setRecScores(freshScores);
+        fetchRecommendedCards(freshIds, freshScores);
+        toast.success(
+          `Found ${json.recommendations} matching internship${json.recommendations !== 1 ? "s" : ""} for you`,
+        );
+      } else {
+        // Fallback: just reload cards with whatever the server saved
+        fetchRecommendedCards(recIds, recScores);
+        toast.success("Recommendations updated — refresh the page to see the latest.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to run recommendations");
+      setRecLoading(false);
+    } finally {
+      setRecRefreshing(false);
+    }
+  };
 
   // ── Fetch applied internship details ────────────────────────────────────────
   useEffect(() => {
@@ -177,15 +232,26 @@ export function OverviewTab({ user }: OverviewTabProps) {
             <Sparkles className="h-5 w-5 text-blue-600" />
             <h2 className="font-semibold text-gray-900">Best Internships For You</h2>
           </div>
-          {recommended.length > 4 && (
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowAllRec(true)}
-              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+              onClick={handleRefreshHRS}
+              disabled={recRefreshing}
+              title="Run recommendation engine"
+              className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg"
             >
-              View All
-              <ChevronRight className="h-4 w-4" />
+              <RefreshCw className={`h-3.5 w-3.5 ${recRefreshing ? "animate-spin" : ""}`} />
+              {recRefreshing ? "Running…" : "Refresh"}
             </button>
-          )}
+            {recommended.length > 4 && (
+              <button
+                onClick={() => setShowAllRec(true)}
+                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+              >
+                View All
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {recLoading ? (

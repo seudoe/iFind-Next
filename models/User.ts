@@ -6,8 +6,11 @@ export interface IResume {
     driveFileId?: string | null;
     driveViewLink?: string | null;
     uploadedAt?: Date | null;
-    // parsedData matches ParsedResumeData from @/types — stored as Mixed in Mongo
     parsedData?: any | null;
+    // Pending slot — holds a newly uploaded file until user confirms
+    pendingFileId?: string | null;
+    pendingViewLink?: string | null;
+    pendingParsedData?: any | null;
 }
 
 export interface IAppliedInternship {
@@ -43,12 +46,14 @@ export interface IUser extends Document {
 
 const ResumeSchema = new Schema(
     {
-        driveFileId:  { type: String, default: null },
-        driveViewLink:{ type: String, default: null },
-        uploadedAt:   { type: Date,   default: null },
-        // parsedData stores the full Resume structure from types/resume.ts
-        // Using Mixed because the nested schema is deeply nested and changes with the Resume type
-        parsedData:   { type: Schema.Types.Mixed, default: null },
+        driveFileId:   { type: String, default: null },
+        driveViewLink: { type: String, default: null },
+        uploadedAt:    { type: Date,   default: null },
+        parsedData:    { type: Schema.Types.Mixed, default: null },
+        // Pending slot — holds a newly uploaded file until user confirms or discards
+        pendingFileId:      { type: String, default: null },
+        pendingViewLink:    { type: String, default: null },
+        pendingParsedData:  { type: Schema.Types.Mixed, default: null },
     },
     { _id: false },
 );

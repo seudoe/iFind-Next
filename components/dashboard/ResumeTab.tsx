@@ -6,6 +6,7 @@ import {
   CheckCircle, AlertCircle, Trash2, Download, ExternalLink,
   Briefcase, GraduationCap, Code, Award, Globe, BookOpen,
   Users, Trophy, Heart, MapPin, Link, Loader2, DatabaseZap, X,
+  ArrowLeftRight, ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -27,15 +28,541 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
   const [deleting, setDeleting]           = useState(false);
   const [reextracting, setReextracting]   = useState(false);
   const [applying, setApplying]           = useState(false);
-  const [showConfirm, setShowConfirm]     = useState(false);
   // pendingData holds freshly extracted data waiting for user confirmation
   const [pendingData, setPendingData]     = useState<ParsedResumeData | null>(null);
+  // oldData holds the previous parsedData for side-by-side comparison
+  const [oldData, setOldData]             = useState<ParsedResumeData | null>(null);
+  // showConfirmModal: irreversible-action warning before applying
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [localResume, setLocalResume]     = useState(user.resume);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const hasResume   = !!localResume?.driveViewLink;
-  const isUploading = uploadPhase !== "idle";
+  const hasResume       = !!localResume?.driveViewLink;
+  const isUploading     = uploadPhase !== "idle";
   const hasExistingData = !!localResume?.parsedData;
+  // Comparison mode: new data extracted, old data exists — show side-by-side
+  const isComparing     = !!pendingData && !!oldData;
+
+  // ── Upload: single call to upload-temp (live resume untouched until confirmed) ──
+  const handleFile = async (file: File) => {
+    if (file.type !== "application/pdf") {
+      toast.error("Only PDF files are accepted.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be under 5MB.");
+      return;
+    }
+
+    setUploadPhase("uploading");
+
+    try {
+      const formData = new FormData();
+      formData.append("resume", file);
+
+      // Switch UI to "extracting" after a short delay so both phases are visible
+      const switchTimer = setTimeout(() => setUploadPhase("extracting"), 800);
+
+      const res = await fetch("/api/user/resume/upload-temp", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      clearTimeout(switchTimer);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Upload failed");
+
+      const { pendingParsedData, existingParsedData } = json.data;
+
+      if (existingParsedData) {
+        // Has existing data — show comparison, nothing committed yet
+        setOldData(existingParsedData);
+        setPendingData(pendingParsedData);
+      } else {
+        // No existing data — commit immediately, then vectorize
+        await commitPending(pendingParsedData, json.data.pendingViewLink);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadPhase("idle");
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  // ── Commit: promote pending → live on server ──────────────────────────────
+  const commitPending = async (
+    parsedData?: ParsedResumeData,
+    viewLink?: string,
+  ) => {
+    setApplying(true);
+    try {
+      const res = await fetch("/api/user/resume/commit", {
+        method: "POST",
+        credentials: "include",
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Commit failed");
+
+      setLocalResume({
+        ...localResume,
+        driveFileId:   json.data.fileId,
+        driveViewLink: json.data.viewLink,
+        uploadedAt:    json.data.uploadedAt,
+        parsedData:    json.data.parsedData ?? parsedData ?? null,
+      });
+      setPendingData(null);
+      setOldData(null);
+      setShowConfirmModal(false);
+      toast.success("Resume updated!");
+      onResumeUpdate?.();
+
+      // Fire-and-forget vectorization — runs after UI is already updated
+      vectorizeResume();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save resume");
+    } finally {
+      setApplying(false);
+    }
+  };
+
+  // ── Vectorize: encode resume vectors + update recommendations (background) ─
+  const vectorizeResume = () => {
+    fetch("/api/user/resume/vectorize", {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success) {
+          toast.success(
+            `Resume vectorized — ${json.recommendations} internship${json.recommendations !== 1 ? "s" : ""} matched`,
+            { duration: 4000 },
+          );
+        } else {
+          // Show the actual error so we can debug
+          toast.error(`Vectorization: ${json.error ?? "unknown error"}`, { duration: 6000 });
+        }
+      })
+      .catch((err) => {
+        toast.error(`Vectorization failed: ${err.message}`, { duration: 6000 });
+      });
+  };
+
+  // ── Discard: delete pending file on server, keep live resume intact ───────
+  const handleDiscardNew = async () => {
+    try {
+      await fetch("/api/user/resume/discard-temp", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // Non-critical — pending file will be cleaned up on next upload anyway
+    }
+    setPendingData(null);
+    setOldData(null);
+    setShowConfirmModal(false);
+    toast.info("Kept existing resume data.");
+  };
+
+  // ── Delete ────────────────────────────────────────────────────────────────
+  const handleDelete = async () => {
+    if (!confirm("Remove your resume? This cannot be undone.")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/user/resume", {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      setLocalResume({ driveFileId: null, driveViewLink: null, uploadedAt: null, extractedSkills: [], parsedData: null });
+      setPendingData(null);
+      setOldData(null);
+      toast.success("Resume removed.");
+      onResumeUpdate?.();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete resume");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  // ── Re-extract ────────────────────────────────────────────────────────────
+  const handleReextract = async () => {
+    if (!localResume?.driveFileId) return;
+    setReextracting(true);
+    try {
+      const res = await fetch("/api/user/resume/reextract", {
+        method: "POST",
+        credentials: "include",
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        if (res.status === 404) {
+          toast.error("Resume file not found. Please re-upload your resume.");
+        } else {
+          throw new Error(json.error || "Re-extraction failed");
+        }
+        return;
+      }
+      const extracted: ParsedResumeData = json.data.parsedData;
+      if (hasExistingData && localResume?.parsedData) {
+        setOldData(localResume.parsedData);
+        setPendingData(extracted);
+      } else {
+        await applyParsedData(extracted);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Re-extraction failed");
+    } finally {
+      setReextracting(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900">Resume</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Upload your resume in PDF format. It will be stored securely.
+        </p>
+      </div>
+
+      {/* ── Irreversible-action confirmation modal ───────────────────── */}
+      {showConfirmModal && pendingData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-11 w-11 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <ShieldAlert className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">This action is irreversible</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Your existing resume data will be permanently replaced</p>
+              </div>
+            </div>
+
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-800 space-y-1">
+              <p className="font-medium">⚠️ Once replaced, the old data cannot be recovered.</p>
+              <p>Make sure you have reviewed both versions in the comparison below before confirming.</p>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowConfirmModal(false)}
+                disabled={applying}
+              >
+                Go back
+              </Button>
+              <Button
+                size="sm"
+                loading={applying}
+                onClick={() => commitPending()}
+                className="bg-red-600 hover:bg-red-700 text-white border-red-600"
+              >
+                Yes, replace permanently
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Upload Zone ─────────────────────────────────────────────── */}
+      {!isComparing && (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => !isUploading && fileRef.current?.click()}
+          className={[
+            "relative border-2 border-dashed rounded-xl p-10 text-center transition-all",
+            isUploading ? "pointer-events-none opacity-70 cursor-default" : "cursor-pointer",
+            dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-gray-50",
+          ].join(" ")}
+        >
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".pdf,application/pdf"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+          />
+
+          {uploadPhase === "uploading" && (
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <Upload className="h-6 w-6 text-blue-600 animate-bounce" />
+              </div>
+              <p className="text-sm font-medium text-blue-600">Uploading resume…</p>
+              <p className="text-xs text-gray-400">Saving your file</p>
+            </div>
+          )}
+
+          {uploadPhase === "extracting" && (
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                <Sparkles className="h-6 w-6 text-indigo-600 animate-pulse" />
+              </div>
+              <p className="text-sm font-medium text-indigo-600">Extracting data from resume…</p>
+              <p className="text-xs text-gray-400">AI is reading your resume</p>
+            </div>
+          )}
+
+          {uploadPhase === "idle" && (
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                <Upload className="h-6 w-6 text-gray-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">
+                  {hasResume ? "Drop a new PDF to replace your resume" : "Drag & drop your resume here"}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">or click to browse — PDF only, max 5MB</p>
+              </div>
+              <Button variant="outline" size="sm" type="button">
+                {hasResume ? "Replace Resume" : "Choose File"}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Side-by-side comparison ──────────────────────────────────── */}
+      {isComparing && pendingData && oldData && (
+        <div className="space-y-4">
+          {/* Banner */}
+          <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <ArrowLeftRight className="h-5 w-5 text-amber-600 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-amber-900">New data extracted — review before applying</p>
+              <p className="text-xs text-amber-700 mt-0.5">Compare your existing data (left) with the newly extracted data (right). Apply only if you're satisfied.</p>
+            </div>
+          </div>
+
+          {/* Action bar */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button
+              size="sm"
+              onClick={() => setShowConfirmModal(true)}
+              disabled={applying}
+              className="bg-green-600 hover:bg-green-700 text-white border-green-600"
+            >
+              <DatabaseZap className="h-3.5 w-3.5 mr-1.5" />
+              Apply new data
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDiscardNew}
+              disabled={applying}
+            >
+              <X className="h-3.5 w-3.5 mr-1.5" />
+              Keep existing data
+            </Button>
+            <span className="text-xs text-gray-400 ml-auto">
+              Applying will permanently replace your current resume data
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Left: existing / old */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-1">
+                <div className="h-2.5 w-2.5 rounded-full bg-gray-400" />
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Current data</span>
+              </div>
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 space-y-4">
+                <ResumeDataDisplay data={oldData} />
+              </div>
+            </div>
+
+            {/* Right: new / pending */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-1">
+                <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                <span className="text-xs font-semibold text-green-600 uppercase tracking-wide">New data</span>
+                <Badge variant="default" className="text-xs ml-1">AI</Badge>
+              </div>
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 p-4 space-y-4">
+                <ResumeDataDisplay data={pendingData} />
+              </div>
+            </div>
+          </div>
+
+          {/* Repeat action bar at bottom for long comparisons */}
+          <div className="flex flex-wrap gap-2 items-center pt-2 border-t border-gray-200">
+            <Button
+              size="sm"
+              onClick={() => setShowConfirmModal(true)}
+              disabled={applying}
+              className="bg-green-600 hover:bg-green-700 text-white border-green-600"
+            >
+              <DatabaseZap className="h-3.5 w-3.5 mr-1.5" />
+              Apply new data
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDiscardNew}
+              disabled={applying}
+            >
+              <X className="h-3.5 w-3.5 mr-1.5" />
+              Keep existing data
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Current Resume Card ──────────────────────────────────────── */}
+      {hasResume && !isComparing ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+          {/* Header */}
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                <FileText className="h-5 w-5 text-red-500" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900 text-sm">Resume.pdf</p>
+                <p className="text-xs text-gray-500">
+                  Uploaded {formatDate(localResume.uploadedAt)}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {uploadPhase === "extracting" ? (
+                <>
+                  <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
+                  <span className="text-xs text-indigo-600 font-medium">Extracting data…</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-xs text-green-600 font-medium">Saved</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Preview iframe */}
+          <div className="rounded-lg border border-gray-200 overflow-hidden bg-gray-50" style={{ height: 480 }}>
+            <iframe
+              src={localResume.driveViewLink!}
+              className="w-full h-full"
+              title="Resume Preview"
+            />
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-2">
+            <a href={localResume.driveViewLink!} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <ExternalLink className="h-3.5 w-3.5" />
+                Open PDF
+              </Button>
+            </a>
+            <a href={`/api/user/resume/download/${localResume.driveFileId}`} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Download className="h-3.5 w-3.5" />
+                Download
+              </Button>
+            </a>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={() => fileRef.current?.click()}
+              disabled={isUploading}
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Re-upload
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={handleReextract}
+              loading={reextracting}
+              disabled={reextracting || isUploading}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {reextracting ? "Extracting…" : "Re-extract Data"}
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              className="flex items-center gap-2 ml-auto"
+              loading={deleting}
+              disabled={isUploading}
+              onClick={handleDelete}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Remove
+            </Button>
+          </div>
+        </div>
+      ) : (
+        !isUploading && !isComparing && (
+          <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6 text-center">
+            <AlertCircle className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">No resume uploaded yet.</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Upload your resume to improve your profile score and enable skill extraction.
+            </p>
+          </div>
+        )
+      )}
+
+      {/* ── Extracted Resume Data (current, non-comparison mode) ─────── */}
+      {!isComparing && localResume?.parsedData ? (
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6 space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-blue-600" />
+              <h3 className="font-semibold text-gray-900">Data Extracted from Resume</h3>
+              <Badge variant="default" className="text-xs">AI</Badge>
+              <button
+                onClick={() => {
+                  console.log("[Resume JSON]", localResume.parsedData);
+                  fetch("/api/user/resume/debug", { credentials: "include" });
+                }}
+                className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2"
+              >
+                debug
+              </button>
+            </div>
+            <p className="text-xs text-gray-500">
+              If you want to change anything, visit your profile
+            </p>
+          </div>
+          <ResumeDataDisplay data={localResume.parsedData} />
+        </div>
+      ) : !isComparing && hasResume && uploadPhase === "idle" && (
+        <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6 text-center">
+          <Sparkles className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+          <p className="text-sm text-gray-500">No data extracted yet.</p>
+          <p className="text-xs text-gray-400 mt-1 mb-3">
+            Click "Re-extract Data" to extract information from your resume.
+          </p>
+          <Button variant="outline" size="sm" onClick={handleReextract} loading={reextracting}>
+            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+            Extract Data
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
   // ── Phase 1: upload file, Phase 2: extract data ──────────────────────────
   const handleFile = async (file: File) => {
@@ -192,269 +719,6 @@ export function ResumeTab({ user, onResumeUpdate }: ResumeTabProps) {
       setReextracting(false);
     }
   };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  };
-
-  return (
-    <div className="max-w-2xl space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900">Resume</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Upload your resume in PDF format. It will be stored securely.
-        </p>
-      </div>
-
-      {/* ── Confirm overwrite modal ──────────────────────────────────── */}
-      {showConfirm && pendingData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                  <DatabaseZap className="h-5 w-5 text-amber-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Update resume data?</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">New data was extracted from your resume</p>
-                </div>
-              </div>
-              <button
-                onClick={() => { setShowConfirm(false); setPendingData(null); }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 space-y-1">
-              <p className="font-medium">⚠️ Your existing resume data will be replaced.</p>
-              <p>Make sure you have your old resume file saved so you can re-upload it to recover the previous data if needed.</p>
-            </div>
-
-            <div className="flex gap-2 justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => { setShowConfirm(false); setPendingData(null); }}
-              >
-                Keep existing data
-              </Button>
-              <Button
-                size="sm"
-                loading={applying}
-                onClick={() => applyParsedData(pendingData)}
-                className="bg-amber-600 hover:bg-amber-700 text-white"
-              >
-                Yes, update data
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Upload Zone ─────────────────────────────────────────────── */}
-      <div
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={handleDrop}
-        onClick={() => !isUploading && fileRef.current?.click()}
-        className={[
-          "relative border-2 border-dashed rounded-xl p-10 text-center transition-all",
-          isUploading ? "pointer-events-none opacity-70 cursor-default" : "cursor-pointer",
-          dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-gray-50",
-        ].join(" ")}
-      >
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".pdf,application/pdf"
-          className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-        />
-
-        {uploadPhase === "uploading" && (
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <Upload className="h-6 w-6 text-blue-600 animate-bounce" />
-            </div>
-            <p className="text-sm font-medium text-blue-600">Uploading resume…</p>
-            <p className="text-xs text-gray-400">Saving your file</p>
-          </div>
-        )}
-
-        {uploadPhase === "extracting" && (
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
-              <Sparkles className="h-6 w-6 text-indigo-600 animate-pulse" />
-            </div>
-            <p className="text-sm font-medium text-indigo-600">Extracting data from resume…</p>
-            <p className="text-xs text-gray-400">AI is reading your resume</p>
-          </div>
-        )}
-
-        {uploadPhase === "idle" && (
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-              <Upload className="h-6 w-6 text-gray-400" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-700">
-                {hasResume ? "Drop a new PDF to replace your resume" : "Drag & drop your resume here"}
-              </p>
-              <p className="text-xs text-gray-400 mt-1">or click to browse — PDF only, max 5MB</p>
-            </div>
-            <Button variant="outline" size="sm" type="button">
-              {hasResume ? "Replace Resume" : "Choose File"}
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* ── Current Resume Card ──────────────────────────────────────── */}
-      {hasResume ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
-                <FileText className="h-5 w-5 text-red-500" />
-              </div>
-              <div>
-                <p className="font-medium text-gray-900 text-sm">Resume.pdf</p>
-                <p className="text-xs text-gray-500">
-                  Uploaded {formatDate(localResume.uploadedAt)}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              {uploadPhase === "extracting" ? (
-                <>
-                  <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
-                  <span className="text-xs text-indigo-600 font-medium">Extracting data…</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-xs text-green-600 font-medium">Saved</span>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Preview iframe */}
-          <div className="rounded-lg border border-gray-200 overflow-hidden bg-gray-50" style={{ height: 480 }}>
-            <iframe
-              src={localResume.driveViewLink!}
-              className="w-full h-full"
-              title="Resume Preview"
-            />
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex flex-wrap gap-2">
-            <a href={localResume.driveViewLink!} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <ExternalLink className="h-3.5 w-3.5" />
-                Open PDF
-              </Button>
-            </a>
-            <a href={`/api/user/resume/download/${localResume.driveFileId}`} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Download className="h-3.5 w-3.5" />
-                Download
-              </Button>
-            </a>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              onClick={() => fileRef.current?.click()}
-              disabled={isUploading}
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Re-upload
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              onClick={handleReextract}
-              loading={reextracting}
-              disabled={reextracting || isUploading}
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              {reextracting ? "Extracting…" : "Re-extract Data"}
-            </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              className="flex items-center gap-2 ml-auto"
-              loading={deleting}
-              disabled={isUploading}
-              onClick={handleDelete}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              Remove
-            </Button>
-          </div>
-        </div>
-      ) : (
-        !isUploading && (
-          <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6 text-center">
-            <AlertCircle className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">No resume uploaded yet.</p>
-            <p className="text-xs text-gray-400 mt-1">
-              Upload your resume to improve your profile score and enable skill extraction.
-            </p>
-          </div>
-        )
-      )}
-
-      {/* ── Extracted Resume Data ────────────────────────────────────── */}
-      {localResume?.parsedData ? (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6 space-y-6">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-blue-600" />
-              <h3 className="font-semibold text-gray-900">Data Extracted from Resume</h3>
-              <Badge variant="default" className="text-xs">AI</Badge>
-              <button
-                onClick={() => {
-                  console.log("[Resume JSON]", localResume.parsedData);
-                  fetch("/api/user/resume/debug", { credentials: "include" });
-                }}
-                className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2"
-              >
-                debug
-              </button>
-            </div>
-            <p className="text-xs text-gray-500">
-              If you want to change anything, visit your profile
-            </p>
-          </div>
-          <ResumeDataDisplay data={localResume.parsedData} />
-        </div>
-      ) : hasResume && uploadPhase === "idle" && (
-        <div className="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-6 text-center">
-          <Sparkles className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-          <p className="text-sm text-gray-500">No data extracted yet.</p>
-          <p className="text-xs text-gray-400 mt-1 mb-3">
-            Click "Re-extract Data" to extract information from your resume.
-          </p>
-          <Button variant="outline" size="sm" onClick={handleReextract} loading={reextracting}>
-            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-            Extract Data
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── Resume Data Display ──────────────────────────────────────────────────────
 

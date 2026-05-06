@@ -44,16 +44,24 @@ export async function POST(req: NextRequest) {
         await connectDB();
 
         const now = new Date();
-        const result = await InternshipModel.updateMany(
+
+        // Fetch matching IDs first so we can return them for vectorization
+        const toApprove = await InternshipModel.find(
             {
                 "moderation.status": "pending_review",
                 "moderation.score": { $gte: threshold },
-                // Only approve if link is not scam suspected
                 $or: [
                     { "linkVerification.isScamSuspected": false },
                     { "linkVerification.isScamSuspected": null },
                 ],
             },
+            { _id: 1 },
+        ).lean();
+
+        const ids = toApprove.map((d) => (d._id as { toString(): string }).toString());
+
+        await InternshipModel.updateMany(
+            { _id: { $in: ids } },
             {
                 $set: {
                     "moderation.status": "manually_approved",
@@ -65,8 +73,9 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            approved: result.modifiedCount,
+            approved: ids.length,
             threshold,
+            ids, // returned so the client can trigger vectorization
         });
     } catch (err) {
         console.error("[approve-high-score POST]", err);

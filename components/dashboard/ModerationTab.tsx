@@ -130,6 +130,23 @@ function StatCard({
     );
 }
 
+// ─── Vectorize helper ─────────────────────────────────────────────────────────
+
+async function triggerVectorize(ids: string[]): Promise<void> {
+    if (ids.length === 0) return;
+    const res = await fetch("/api/admin/vectorize", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error ?? "Vectorization failed");
+    toast.success(
+        `Vectorized ${json.vectorized} internship${json.vectorized !== 1 ? "s" : ""}, updated ${json.recommendationsUpdated} user recommendation${json.recommendationsUpdated !== 1 ? "s" : ""}`,
+    );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function ModerationTab({ user }: { user: User }) {
@@ -142,6 +159,7 @@ export function ModerationTab({ user }: { user: User }) {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [rejectTarget, setRejectTarget] = useState<string | null>(null);
+    const [vectorizeStatus, setVectorizeStatus] = useState<"idle" | "running">("idle");
 
     const fetchData = useCallback(async (p: number, f: FilterType) => {
         setLoading(true);
@@ -184,10 +202,15 @@ export function ModerationTab({ user }: { user: User }) {
             });
             const json = await res.json();
             if (!json.success) throw new Error(json.error);
-            toast.success("Internship approved");
+            toast.success("Internship approved — vectorizing in background…");
             setStats((s) =>
                 s ? { ...s, pendingCount: Math.max(0, s.pendingCount - 1) } : s,
             );
+            // Fire-and-forget vectorization — runs after approve returns
+            setVectorizeStatus("running");
+            triggerVectorize([id]).catch((err) => {
+                toast.error(`Vectorization failed: ${err.message}`);
+            }).finally(() => setVectorizeStatus("idle"));
         } catch {
             toast.error("Failed to approve — reverting");
             fetchData(page, filter);
@@ -277,10 +300,16 @@ export function ModerationTab({ user }: { user: User }) {
             const json = await res.json();
             if (!json.success) throw new Error(json.error);
             toast.success(
-                `Approved ${json.approved} internships with score >= ${json.threshold}`,
+                `Approved ${json.approved} internship${json.approved !== 1 ? "s" : ""} with score ≥ ${json.threshold} — vectorizing in background…`,
             );
-            // Refresh the data
             fetchData(page, filter);
+            // Fire-and-forget vectorization for all approved IDs
+            if (Array.isArray(json.ids) && json.ids.length > 0) {
+                setVectorizeStatus("running");
+                triggerVectorize(json.ids).catch((err) => {
+                    toast.error(`Vectorization failed: ${err.message}`);
+                }).finally(() => setVectorizeStatus("idle"));
+            }
         } catch {
             toast.error("Failed to approve high score internships");
         } finally {
@@ -358,7 +387,16 @@ export function ModerationTab({ user }: { user: User }) {
                         {label}
                     </button>
                 ))}
-                <div className="ml-auto flex gap-2">
+                <div className="ml-auto flex items-center gap-2">
+                    {vectorizeStatus === "running" && (
+                        <span className="flex items-center gap-1.5 text-xs text-blue-600 font-medium animate-pulse">
+                            <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                            </svg>
+                            Vectorizing…
+                        </span>
+                    )}
                     <Button
                         size="sm"
                         variant="outline"

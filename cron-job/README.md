@@ -23,6 +23,8 @@ pip install -r requirements.txt
 python app.py
 ```
 
+**Note**: The app will use system local time on Termux. Python 3.9+ will use `zoneinfo` for timezone support if available.
+
 ### On Linux/Mac
 
 ```bash
@@ -150,12 +152,20 @@ sudo systemctl start scraping-cron
         ```
 
 3. **Verify timezone**:
-    - Check `TIMEZONE` setting in `app.py` (default: `Asia/Kolkata`)
-    - Change to your timezone:
-        ```python
-        TIMEZONE = pytz.timezone('America/New_York')  # Example
+    - The app tries to use timezone support in this order:
+        1. Python 3.9+ `zoneinfo` module (built-in)
+        2. `pytz` library (if installed)
+        3. System local time (fallback for Termux)
+    - On Termux, it will use system local time automatically
+    - To change timezone on Termux:
+        ```bash
+        export TZ='Asia/Kolkata'
+        python app.py
         ```
-    - Common timezones: `UTC`, `Asia/Kolkata`, `America/New_York`, `Europe/London`
+    - On systems with timezone support, edit `app.py`:
+        ```python
+        TIMEZONE = ZoneInfo('America/New_York')  # Example
+        ```
 
 4. **Test the scheduler**:
 

@@ -10,7 +10,10 @@ import requests
 import json
 import os
 import logging
-import pytz
+
+# Timezone support is optional - use system local time on Termux
+TIMEZONE = None
+TIMEZONE_NAME = 'System Local Time'
 
 app = Flask(__name__)
 
@@ -18,8 +21,8 @@ app = Flask(__name__)
 SCRAPING_SERVER_URL = "https://seudoe-internscraper.hf.space/scrape"
 SCRAPERS = ["github", "internshala", "indeed", "naukri", "unstop", "freshersworld", "letsintern"]
 LOG_FILE = "log.json"
-TRIGGER_TIME = time(9, 0)  # 9:00 AM
-TIMEZONE = pytz.timezone('Asia/Kolkata')  # Adjust to your timezone
+TRIGGER_TIME = time(21, 27)  # Configure your trigger time here
+
 
 # Setup logging
 logging.basicConfig(
@@ -58,7 +61,7 @@ def already_triggered_today():
 def trigger_scraping():
     """Send POST request to scraping server."""
     logger.info("=" * 60)
-    logger.info("[*] TRIGGER_SCRAPING FUNCTION CALLED!")
+    logger.info("🚀 TRIGGER_SCRAPING FUNCTION CALLED!")
     logger.info(f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     logger.info("=" * 60)
     
@@ -72,65 +75,118 @@ def trigger_scraping():
         "scrapers": SCRAPERS
     }
     
-    try:
-        # Increased timeout for Hugging Face cold start (can take 30-60s to wake up)
-        response = requests.post(
-            SCRAPING_SERVER_URL,
-            json=payload,
-            timeout=120,  # 2 minute timeout for cold start + job initiation
-            headers={'Content-Type': 'application/json'}
-        )
-        
-        # HTTP 200 (OK) and 202 (Accepted) are both success codes
-        # 202 means the request was accepted and is being processed asynchronously
-        is_success = response.status_code in [200, 202]
-        status = "SUCCESS" if is_success else f"FAILED (HTTP {response.status_code})"
-        
-        # Parse job_id from response if available
-        job_id = None
-        response_data = None
+    max_retries = 3
+    retry_delay = 10  # seconds between retries
+    
+    for attempt in range(1, max_retries + 1):
         try:
-            response_data = response.json()
-            job_id = response_data.get('job_id')
-            if job_id:
-                logger.info(f"✅ Job started with ID: {job_id}")
-                logger.info(f"   Status: {response_data.get('status', 'unknown')}")
-                logger.info(f"   Message: {response_data.get('message', 'N/A')}")
-        except:
-            pass
-        
-        entry = {
-            "date": datetime.now().date().isoformat(),
-            "time": datetime.now().time().isoformat(),
-            "status": status,
-            "response_code": response.status_code,
-            "scrapers": SCRAPERS,
-            "job_id": job_id,
-            "response": response_data
-        }
-        
-        save_log(entry)
-        logger.info(f"Scraping trigger completed: {status}")
-        
-    except requests.exceptions.Timeout:
-        entry = {
-            "date": datetime.now().date().isoformat(),
-            "time": datetime.now().time().isoformat(),
-            "status": "TIMEOUT",
-            "error": "Request timed out after 120 seconds (Hugging Face may be sleeping)"
-        }
-        save_log(entry)
-        logger.error("Scraping server request timed out - Hugging Face Space may be in cold start")
-        
-    except Exception as e:
-        entry = {
-            "date": datetime.now().date().isoformat(),
-            "time": datetime.now().time().isoformat(),
-            "status": "ERROR",
-            "error": str(e)
-        }
-        save_log(entry)
-        logger.error(f"Error triggering scraping: {e}")
+            logger.info(f"Attempt {attempt}/{max_retries}...")
+            
+            # Increased timeout for Hugging Face cold start (can take 30-60s to wake up)
+            response = requests.post(
+                SCRAPING_SERVER_URL,
+                json=payload,
+                timeout=120,  # 2 minute timeout for cold start + job initiation
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            # Check if we got HTML (Space is still waking up)
+            content_type = response.headers.get('Content-Type', '')
+            if 'text/html' in content_type:
+                logger.warning(f"⚠️ Attempt {attempt}: Space is still waking up (got HTML response)")
+                logger.info(f"   Status: {response.status_code}, Content-Type: {content_type}")
+                
+                if attempt < max_retries:
+                    logger.info(f"   Waiting {retry_delay} seconds before retry...")
+                    import time
+                    time.sleep(retry_delay)
+                    continue
+                else:
+                    logger.error("❌ Space failed to wake up after all retries")
+                    entry = {
+                        "date": datetime.now().date().isoformat(),
+                        "time": datetime.now().time().isoformat(),
+                        "status": "FAILED (Space not ready)",
+                        "response_code": response.status_code,
+                        "error": "Hugging Face Space is sleeping and didn't wake up in time"
+                    }
+                    save_log(entry)
+                    return
+            
+            # HTTP success codes:
+            # 200 (OK) - Request succeeded
+            # 202 (Accepted) - Request accepted for async processing
+            is_success = response.status_code in [200, 202]
+            status = "SUCCESS" if is_success else f"FAILED (HTTP {response.status_code})"
+            
+            # Log the response
+            logger.info(f"Response Status: {response.status_code}")
+            logger.info(f"Response Content-Type: {content_type}")
+            
+            # Parse job_id from response if available
+            job_id = None
+            response_data = None
+            try:
+                response_data = response.json()
+                job_id = response_data.get('job_id')
+                if job_id:
+                    logger.info(f"✅ Job started with ID: {job_id}")
+                    logger.info(f"   Status: {response_data.get('status', 'unknown')}")
+                    logger.info(f"   Message: {response_data.get('message', 'N/A')}")
+                else:
+                    logger.warning(f"⚠️ No job_id in response: {response_data}")
+            except Exception as e:
+                logger.error(f"Failed to parse JSON response: {e}")
+                logger.error(f"Raw response (first 500 chars): {response.text[:500]}")
+            
+            entry = {
+                "date": datetime.now().date().isoformat(),
+                "time": datetime.now().time().isoformat(),
+                "status": status,
+                "response_code": response.status_code,
+                "scrapers": SCRAPERS,
+                "job_id": job_id,
+                "response": response_data,
+                "attempts": attempt
+            }
+            
+            save_log(entry)
+            logger.info(f"Scraping trigger completed: {status}")
+            return  # Success, exit the retry loop
+            
+        except requests.exceptions.Timeout:
+            logger.error(f"⚠️ Attempt {attempt}: Request timed out")
+            if attempt < max_retries:
+                logger.info(f"   Waiting {retry_delay} seconds before retry...")
+                import time
+                time.sleep(retry_delay)
+                continue
+            else:
+                entry = {
+                    "date": datetime.now().date().isoformat(),
+                    "time": datetime.now().time().isoformat(),
+                    "status": "TIMEOUT",
+                    "error": "Request timed out after all retries (Hugging Face may be sleeping)"
+                }
+                save_log(entry)
+                logger.error("❌ Scraping server request timed out after all retries")
+                
+        except Exception as e:
+            logger.error(f"⚠️ Attempt {attempt}: Error - {e}")
+            if attempt < max_retries:
+                logger.info(f"   Waiting {retry_delay} seconds before retry...")
+                import time
+                time.sleep(retry_delay)
+                continue
+            else:
+                entry = {
+                    "date": datetime.now().date().isoformat(),
+                    "time": datetime.now().time().isoformat(),
+                    "status": "ERROR",
+                    "error": str(e)
+                }
+                save_log(entry)
+                logger.error(f"❌ Error triggering scraping after all retries: {e}")
 
 
 def get_next_trigger_time():
@@ -438,8 +494,8 @@ def trigger_now():
 
 
 if __name__ == '__main__':
-    # Initialize scheduler with timezone
-    scheduler = BackgroundScheduler(timezone=TIMEZONE)
+    # Initialize scheduler - will use system local timezone via tzlocal
+    scheduler = BackgroundScheduler()
     
     # Add job with the configured trigger time
     scheduler.add_job(
@@ -453,8 +509,11 @@ if __name__ == '__main__':
     
     logger.info("=" * 60)
     logger.info("Scheduler started successfully!")
-    logger.info(f"Timezone: {TIMEZONE}")
-    logger.info(f"Current time: {datetime.now(TIMEZONE).strftime('%Y-%m-%d %I:%M:%S %p')}")
+    logger.info(f"Timezone: {TIMEZONE_NAME}")
+    
+    current_time_str = datetime.now().strftime('%Y-%m-%d %I:%M:%S %p')
+    
+    logger.info(f"Current time: {current_time_str}")
     logger.info(f"Trigger time configured: {TRIGGER_TIME.strftime('%I:%M %p')} (Hour: {TRIGGER_TIME.hour}, Minute: {TRIGGER_TIME.minute})")
     logger.info(f"Next trigger: {get_next_trigger_time().strftime('%Y-%m-%d %I:%M %p')}")
     

@@ -53,6 +53,7 @@
         "sonner": "^2.0.7",
         "swr": "^2.4.1",
         "tailwind-merge": "^3.5.0",
+        "vectra": "^0.15.0",
         "zod": "^4.4.2"
     },
     "devDependencies": {

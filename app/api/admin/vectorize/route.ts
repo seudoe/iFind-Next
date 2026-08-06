@@ -4,17 +4,12 @@ import { getSession } from "@/lib/auth";
 import InternshipModel from "@/models/Internship";
 import UserModel from "@/models/User";
 import mongoose from "mongoose";
+import { onInternshipsAddedBatch } from "@/lib/recommendation/events/InternshipEvents";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const HF_BASE = "https://seudoe-vectorisationResume.hf.space";
 const BATCH_SIZE = 70; // HF Space max per request
 const BOOST_WEIGHT = 0.15;
-
-// Recommender weights (must match run-recommender.mjs)
-const W_TFIDF = 0.4;
-const W_BERT = 0.6;
-const TOP_N = 20;
-const THRESHOLD = 0.1;
 
 async function requireAdmin() {
     const session = await getSession();
@@ -54,19 +49,13 @@ async function hfPost(path: string, body: unknown) {
     return res.json();
 }
 
-function dot(a: number[], b: number[]): number {
-    if (!a || !b || a.length !== b.length) return 0;
-    let sum = 0;
-    for (let i = 0; i < a.length; i++) sum += a[i] * b[i];
-    return sum;
-}
-
 // ─── Phase 1: Vectorize the given internship IDs ──────────────────────────────
 
 async function vectorizeInternships(ids: string[]): Promise<{
     encoded: number;
     skipped: number;
     errors: string[];
+    vectorizedIds: string[];
 }> {
     await connectDB();
     const db = mongoose.connection.db!;
@@ -81,6 +70,7 @@ async function vectorizeInternships(ids: string[]): Promise<{
     const valid = docs.filter((d) => d.name && d.summary);
     const skipped = docs.length - valid.length;
     const errors: string[] = [];
+    const vectorizedIds: string[] = [];
     let encoded = 0;
 
     // Process in batches of BATCH_SIZE
@@ -113,117 +103,18 @@ async function vectorizeInternships(ids: string[]): Promise<{
         if (ops.length > 0) {
             await col.bulkWrite(ops);
             encoded += ops.length;
+            vectorizedIds.push(...result.vectors.map((v) => v.id));
         }
     }
 
-    return { encoded, skipped, errors };
+    return { encoded, skipped, errors, vectorizedIds };
 }
 
-// ─── Phase 2: Re-run recommender for all users against newly vectorized internships ──
+// ─── Phase 2: Insert vectorized internships into HNSW index (Event-driven) ────
 
-async function updateRecommendations(newInternshipIds: string[]): Promise<{
-    processed: number;
-    skipped: number;
-}> {
-    await connectDB();
-    const db = mongoose.connection.db!;
-
-    // Load only the newly vectorized internships
-    const objectIds = newInternshipIds.map(
-        (id) => new mongoose.Types.ObjectId(id),
-    );
-    const newInternships = await db
-        .collection("internships")
-        .find({
-            _id: { $in: objectIds },
-            tfidf_vector: { $exists: true },
-            bert_vector: { $exists: true },
-        })
-        .project({ _id: 1, tfidf_vector: 1, bert_vector: 1 })
-        .toArray();
-
-    if (newInternships.length === 0) return { processed: 0, skipped: 0 };
-
-    // Process all users who have resume vectors
-    const userCursor = db
-        .collection("users")
-        .find({
-            "resume.tfidf_vector": { $exists: true },
-            "resume.bert_vector": { $exists: true },
-        })
-        .project({
-            _id: 1,
-            "resume.tfidf_vector": 1,
-            "resume.bert_vector": 1,
-            recommendedInternships: 1,
-            recommendedScores: 1,
-        });
-
-    let processed = 0;
-    let skipped = 0;
-
-    for await (const user of userCursor) {
-        const userTfidf: number[] = user.resume?.tfidf_vector;
-        const userBert: number[] = user.resume?.bert_vector;
-
-        if (!userTfidf || !userBert) {
-            skipped++;
-            continue;
-        }
-
-        // Score only the new internships
-        const newScored = newInternships.map((intern) => ({
-            id: intern._id,
-            score:
-                dot(userTfidf, intern.tfidf_vector) * W_TFIDF +
-                dot(userBert, intern.bert_vector) * W_BERT,
-        }));
-
-        // Merge with existing recommendations
-        const existingScores: { id: mongoose.Types.ObjectId; score: number }[] =
-            user.recommendedScores ?? [];
-
-        // Build a map of existing scores, keyed by string ID
-        const scoreMap = new Map<string, number>(
-            existingScores.map((s) => [s.id.toString(), s.score]),
-        );
-
-        // Upsert new scores
-        for (const s of newScored) {
-            if (s.score >= THRESHOLD) {
-                const key = s.id.toString();
-                // Keep the higher score if already present
-                if (!scoreMap.has(key) || scoreMap.get(key)! < s.score) {
-                    scoreMap.set(key, s.score);
-                }
-            }
-        }
-
-        // Re-sort and take top N
-        const merged = Array.from(scoreMap.entries())
-            .map(([id, score]) => ({ id: new mongoose.Types.ObjectId(id), score }))
-            .sort((a, b) => b.score - a.score)
-            .slice(0, TOP_N);
-
-        await db.collection("users").updateOne(
-            { _id: user._id },
-            {
-                $set: {
-                    recommendedInternships: merged.map((r) => r.id),
-                    recommendedScores: merged.map((r) => ({
-                        id: r.id,
-                        score: Math.round(r.score * 1000) / 1000,
-                    })),
-                    recommendedUpdatedAt: new Date(),
-                },
-            },
-        );
-
-        processed++;
-    }
-
-    return { processed, skipped };
-}
+// Phase 6: No longer regenerates all recommendations globally.
+// Instead, inserts new internships into HNSW index.
+// Recommendations are generated lazily when users request them.
 
 // ─── Route handler ────────────────────────────────────────────────────────────
 
@@ -231,12 +122,14 @@ async function updateRecommendations(newInternshipIds: string[]): Promise<{
  * POST /api/admin/vectorize
  * Body: { ids: string[] }
  *
+ * Phase 6 Behavior:
  * 1. Encodes the given internship IDs via HF Space (in batches of 70)
  * 2. Writes tfidf_vector + bert_vector back to each internship document
- * 3. Re-runs the recommender for all users, merging new scores into existing ones
+ * 3. Triggers event handler to insert vectorized internships into HNSW index
+ * 4. Does NOT regenerate recommendations globally (lazy generation on request)
  *
  * Returns:
- *   { success, vectorized, skipped, recommendationsUpdated, errors }
+ *   { success, vectorized, skipped, indexInserted, errors }
  */
 export async function POST(req: NextRequest) {
     try {
@@ -254,18 +147,28 @@ export async function POST(req: NextRequest) {
         }
 
         // Phase 1: vectorize
-        const { encoded, skipped, errors } = await vectorizeInternships(ids);
+        const { encoded, skipped, errors, vectorizedIds } = await vectorizeInternships(ids);
 
-        // Phase 2: update recommendations (only for successfully vectorized ones)
-        // We re-query to get only those that now have vectors
-        const { processed: recommendationsUpdated } =
-            await updateRecommendations(ids);
+        // Phase 2: insert into HNSW index (event-driven)
+        let indexInserted = 0;
+        if (vectorizedIds.length > 0) {
+            try {
+                console.log(`📥 Triggering HNSW index insertion for ${vectorizedIds.length} internships...`);
+                await onInternshipsAddedBatch(vectorizedIds);
+                indexInserted = vectorizedIds.length;
+                console.log(`✅ HNSW index updated with ${indexInserted} internships`);
+            } catch (indexError) {
+                console.error("❌ Failed to update HNSW index:", indexError);
+                errors.push(`HNSW index update failed: ${indexError instanceof Error ? indexError.message : String(indexError)}`);
+            }
+        }
 
         return NextResponse.json({
             success: true,
             vectorized: encoded,
             skipped,
-            recommendationsUpdated,
+            indexInserted,
+            message: "Internships vectorized and inserted into HNSW index. Recommendations will be generated lazily on user request.",
             errors: errors.length > 0 ? errors : undefined,
         });
     } catch (err) {

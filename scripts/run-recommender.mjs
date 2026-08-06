@@ -4,6 +4,9 @@
  * Computes hybrid recommendation scores for every user against every
  * active internship using pre-computed tfidf + bert vectors stored in MongoDB.
  *
+ * This script has been refactored to use the RecommendationEngine service.
+ * The core logic is now in lib/recommendation/engine.ts
+ *
  * Formula:  score = dot(user.tfidf, intern.tfidf) * 0.4
  *                 + dot(user.bert,  intern.bert)  * 0.6
  *
@@ -26,8 +29,10 @@ import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
-// ─── Load .env.local ──────────────────────────────────────────────────────────
+// ─── Dynamic import for RecommendationEngine (ESM compatibility) ──────────────
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Load .env.local
 const envContent = readFileSync(join(__dirname, "../.env.local"), "utf-8");
 envContent.split("\n").forEach((line) => {
   const trimmed = line.trim();
@@ -54,40 +59,44 @@ console.log("✅ MongoDB connected\n");
 
 const db = mongoose.connection.db;
 
-// ─── Dot product (cosine similarity for L2-normalised vectors) ────────────────
-function dot(a, b) {
-  if (!a || !b || a.length !== b.length) return 0;
-  let sum = 0;
-  for (let i = 0; i < a.length; i++) sum += a[i] * b[i];
-  return sum;
+// ─── Import RecommendationEngine (compile TypeScript on-the-fly using tsx) ────
+// Note: This requires @types/node and tsx to be installed, or we use the compiled JS
+let RecommendationEngine;
+try {
+  // Try to import from compiled dist (if built)
+  const module = await import("../lib/recommendation/engine.js");
+  RecommendationEngine = module.RecommendationEngine;
+} catch {
+  // Fallback: Use node with --loader or tsx
+  console.error("⚠️  Could not import RecommendationEngine.");
+  console.error("    Run 'npm run build' or use 'tsx scripts/run-recommender.mjs'");
+  process.exit(1);
 }
 
-function hybridScore(userTfidf, userBert, internTfidf, internBert) {
-  return dot(userTfidf, internTfidf) * W_TFIDF
-       + dot(userBert,  internBert)  * W_BERT;
-}
+// ─── Initialize engine with config ────────────────────────────────────────────
+const engine = new RecommendationEngine({
+  topN: TOP_N,
+  threshold: THRESHOLD,
+  tfidfWeight: W_TFIDF,
+  bertWeight: W_BERT,
+});
 
-// ─── Load all active internships with vectors into memory ─────────────────────
+// ─── Load all internship candidates ───────────────────────────────────────────
 console.log("📦 Loading internship vectors…");
-const internships = await db.collection("internships")
-  .find({ isActive: true })
-  .project({ _id: 1, name: 1, tfidf_vector: 1, bert_vector: 1 })
-  .toArray();
+const candidates = await engine.loadInternshipCandidates();
 
-const internshipsWithVectors = internships.filter(i => i.tfidf_vector && i.bert_vector);
-const internshipsMissingVectors = internships.filter(i => !i.tfidf_vector || !i.bert_vector);
+// Count total internships
+const totalInternships = await db.collection("internships").countDocuments({ isActive: true });
+const internshipsMissingVectors = totalInternships - candidates.length;
 
-console.log(`  Total active: ${internships.length}`);
-console.log(`  With vectors: ${internshipsWithVectors.length}`);
+console.log(`  Total active: ${totalInternships}`);
+console.log(`  With vectors: ${candidates.length}`);
 
-if (internshipsMissingVectors.length > 0) {
-  console.log(`  ⚠️  Missing vectors (run vectorise-all.mjs first):`);
-  internshipsMissingVectors.forEach(i =>
-    console.log(`     ${i._id}  ${i.name}`)
-  );
+if (internshipsMissingVectors > 0) {
+  console.log(`  ⚠️  Missing vectors: ${internshipsMissingVectors} (run vectorise-all.mjs first)`);
 }
 
-if (internshipsWithVectors.length === 0) {
+if (candidates.length === 0) {
   console.error("\n❌ No internships have vectors. Run vectorise-all.mjs --only=internships first.");
   await mongoose.disconnect();
   process.exit(1);
@@ -120,32 +129,24 @@ for await (const user of userCursor) {
     continue;
   }
 
-  // Score every internship
-  const scored = internshipsWithVectors.map(intern => ({
-    id:    intern._id,
-    score: hybridScore(userTfidf, userBert, intern.tfidf_vector, intern.bert_vector),
-  }));
+  // Use RecommendationEngine to compute recommendations
+  const userInput = {
+    userId: user._id,
+    username: user.username,
+    vectors: {
+      tfidfVector: userTfidf,
+      bertVector: userBert,
+    },
+  };
 
-  // Sort descending, apply threshold, take top N
-  const recommendations = scored
-    .filter(s => s.score >= THRESHOLD)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, TOP_N)
-    .map(s => ({ id: s.id, score: Math.round(s.score * 1000) / 1000 }));
+  const result = await engine.computeUserRecommendations(userInput, candidates);
 
-  // Save to user document — store as array of {id, score} objects
-  await db.collection("users").updateOne(
-    { _id: user._id },
-    { $set: {
-      recommendedInternships:    recommendations.map(r => r.id),
-      recommendedScores:         recommendations,   // [{ id, score }]
-      recommendedUpdatedAt:      new Date(),
-    }},
-  );
+  // Save to database
+  await engine.saveRecommendations(result);
 
   processed++;
   process.stdout.write(
-    `  ✅ ${processed}/${totalUsers}  ${user.username ?? user._id}  → ${recommendations.length} recommendations\r`
+    `  ✅ ${processed}/${totalUsers}  ${user.username ?? user._id}  → ${result.recommendations.length} recommendations\r`
   );
 }
 

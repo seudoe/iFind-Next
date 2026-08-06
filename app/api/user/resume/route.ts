@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { uploadResumeToGridFS, deleteResumeFromGridFS } from "@/lib/gridfs";
+import { invalidateCacheOnResumeUpdate } from "@/lib/recommendation/cache/middleware";
 
 // POST /api/user/resume — upload PDF to GridFS, save to user doc
 // Parsing is intentionally NOT done here — the client calls /reextract after upload
@@ -60,6 +61,9 @@ export async function POST(req: NextRequest) {
 
     await user.save();
 
+    // Invalidate recommendation cache when resume changes
+    await invalidateCacheOnResumeUpdate(session.userId);
+
     return NextResponse.json({
       success: true,
       data: { fileId, viewLink, downloadLink, uploadedAt },
@@ -97,6 +101,9 @@ export async function DELETE() {
       parsedData: null,
     };
     await user.save();
+
+    // Invalidate recommendation cache when resume is deleted
+    await invalidateCacheOnResumeUpdate(session.userId);
 
     return NextResponse.json({ success: true, message: "Resume deleted" });
   } catch (err) {

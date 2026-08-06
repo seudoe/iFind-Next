@@ -6,7 +6,7 @@ import { signToken, setAuthCookie } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, username, email, password, city, skills } = await req.json();
+    const { name, username, email, password, city } = await req.json();
 
     if (!name || !username || !email || !password) {
       return NextResponse.json({ success: false, error: "All fields are required" }, { status: 400 });
@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
       email: email.toLowerCase(),
       password: hashed,
       city: city || null,
-      skills: skills || [],
       profileCompletionScore: 20,
     });
 

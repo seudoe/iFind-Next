@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
+import { invalidateCacheOnProfileUpdate } from "@/lib/recommendation/cache/middleware";
 
 // GET /api/user/profile
 export async function GET() {
@@ -52,6 +53,9 @@ export async function PUT(req: NextRequest) {
     user.profileCompletionScore = Math.min(score, 100);
 
     await user.save();
+
+    // Invalidate recommendation cache on profile update
+    await invalidateCacheOnProfileUpdate(session.userId);
 
     const updated = await User.findById(session.userId).select("-password").lean();
     return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(updated)) });

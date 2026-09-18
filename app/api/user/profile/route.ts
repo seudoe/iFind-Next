@@ -30,32 +30,50 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const allowed = ["name", "phone", "city", "state", "country"];
     const updates: Record<string, unknown> = {};
-    for (const key of allowed) {
-      if (key in body) updates[key] = body[key];
-    }
+    let hasChanged = false;
 
     await connectDB();
 
     const user = await User.findById(session.userId);
     if (!user) return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
 
-    Object.assign(user, updates);
+    for (const key of allowed) {
+      if (key in body && (user as unknown as Record<string, unknown>)[key] !== body[key]) {
+        updates[key] = body[key];
+        hasChanged = true;
+      }
+    }
 
-    // Simple scoring: each section = points
-    let score = 20; // base for having an account
-    if (user.profilePicture) score += 10;
-    if (user.resume?.driveFileId) score += 20;
-    if (user.resume?.parsedData?.skills?.length >= 3) score += 15;
-    if (user.resume?.parsedData?.education?.length > 0) score += 15;
-    if (user.resume?.parsedData?.workHistory?.length > 0) score += 10;
-    if (user.phone) score += 5;
-    if (user.city) score += 5;
-    user.profileCompletionScore = Math.min(score, 100);
+    if (body.parsedData && JSON.stringify(user.resume?.parsedData) !== JSON.stringify(body.parsedData)) {
+      if (!user.resume) user.resume = {};
+      user.resume.parsedData = body.parsedData;
+      hasChanged = true;
+    }
 
-    await user.save();
+    if (hasChanged) {
+      Object.assign(user, updates);
 
-    // Invalidate recommendation cache on profile update
-    await invalidateCacheOnProfileUpdate(session.userId);
+      // Recompute profile score
+      let score = 20;
+      if (user.profilePicture) score += 10;
+      if (user.resume?.driveFileId) score += 20;
+      if (user.resume?.parsedData?.skills?.length >= 3) score += 15;
+      if (user.resume?.parsedData?.education?.length > 0) score += 15;
+      if (user.resume?.parsedData?.workHistory?.length > 0) score += 10;
+      if (user.phone) score += 5;
+      if (user.city) score += 5;
+      user.profileCompletionScore = Math.min(score, 100);
+
+      await user.save();
+
+      // Only trigger re-encoding & re-scoring if parsedData exists and data actually changed
+      if (user.resume?.parsedData) {
+        const { vectorizeAndRecommendUser } = await import("@/lib/vectorizer");
+        void vectorizeAndRecommendUser(session.userId, user.resume.parsedData);
+      }
+      await invalidateCacheOnProfileUpdate(session.userId);
+    }
+
 
     const updated = await User.findById(session.userId).select("-password").lean();
     return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(updated)) });

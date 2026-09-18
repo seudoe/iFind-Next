@@ -7,6 +7,8 @@ export interface IResume {
     driveViewLink?: string | null;
     uploadedAt?: Date | null;
     parsedData?: any | null;
+    tfidf_vector?: number[] | null;
+    bert_vector?: number[] | null;
     // Pending slot — holds a newly uploaded file until user confirms
     pendingFileId?: string | null;
     pendingViewLink?: string | null;
@@ -36,6 +38,7 @@ export interface IUser extends Document {
     appliedInternships: IAppliedInternship[];
     savedInternships: mongoose.Types.ObjectId[];
     recommendedInternships: mongoose.Types.ObjectId[];
+    recommendedScores?: any[];
     recommendedUpdatedAt?: Date | null;
     profileCompletionScore: number; // 0–100, computed field
     createdAt: Date;

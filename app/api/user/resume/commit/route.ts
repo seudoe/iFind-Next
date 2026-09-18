@@ -18,32 +18,13 @@ async function vectorizeAndRecommend(userId: string, parsedData: unknown) {
     const mongoose = (await import("mongoose")).default;
     const db = mongoose.connection.db!;
 
-    // 1. Encode resume via HF Space
-    const hfRes = await fetch(`${HF_BASE}/encode-resume`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ resume: parsedData, boost_weight: BOOST_WEIGHT }),
-    });
+    // 1 & 2. Encode resume & save vectors to user doc (both resume and parsedData)
+    const { encodeAndSaveUserResume } = await import("@/lib/vectorizer");
+    const vectors = await encodeAndSaveUserResume(userId, parsedData);
+    if (!vectors) return;
 
-    if (!hfRes.ok) {
-      const text = await hfRes.text();
-      console.error(`[resume/commit] HF encode-resume failed ${hfRes.status}: ${text.slice(0, 200)}`);
-      return;
-    }
+    const { tfidf, bert } = vectors;
 
-    const { tfidf, bert } = await hfRes.json();
-
-    if (!tfidf || !bert) {
-      console.error("[resume/commit] HF returned no tfidf/bert vectors");
-      return;
-    }
-
-    // 2. Save vectors to user doc
-    const userOid = new mongoose.Types.ObjectId(userId);
-    await db.collection("users").updateOne(
-      { _id: userOid },
-      { $set: { "resume.tfidf_vector": tfidf, "resume.bert_vector": bert } },
-    );
 
     // 3. Score all active internships with vectors
     const internships = await db
@@ -72,7 +53,7 @@ async function vectorizeAndRecommend(userId: string, parsedData: unknown) {
       .slice(0, TOP_N);
 
     await db.collection("users").updateOne(
-      { _id: userOid },
+      { _id: new mongoose.Types.ObjectId(userId) },
       {
         $set: {
           recommendedInternships: scored.map((r) => r.id),
